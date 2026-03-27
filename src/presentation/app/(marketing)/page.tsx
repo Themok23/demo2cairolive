@@ -85,7 +85,7 @@ export default async function HomePage() {
             <h2 className="font-display text-3xl sm:text-4xl text-secondary text-center">Browse by Category</h2>
           </FadeUp>
           <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {cats.map((cat, i) => (
+            {cats.map((cat: any, i: number) => (
               <FadeUp key={cat.slug} delay={i * 0.1}>
                 <Link
                   href={`/explore/${cat.slug}`}

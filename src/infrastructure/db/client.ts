@@ -10,8 +10,21 @@ function getDatabaseUrl(): string {
   return url;
 }
 
-const sql = neon(getDatabaseUrl());
+let dbInstance: ReturnType<typeof drizzle> | null = null;
 
-export const db = drizzle(sql, { schema });
+export function getDatabase() {
+  if (!dbInstance) {
+    const sql = neon(getDatabaseUrl());
+    dbInstance = drizzle(sql, { schema });
+  }
+  return dbInstance;
+}
 
-export type Database = typeof db;
+// For backwards compatibility, create lazy getter
+export const db = new Proxy({} as any, {
+  get(target, prop) {
+    return getDatabase()[prop as keyof typeof dbInstance];
+  },
+});
+
+export type Database = ReturnType<typeof getDatabase>;

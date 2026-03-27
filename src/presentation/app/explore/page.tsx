@@ -50,7 +50,7 @@ export default async function ExplorePage({
               >
                 All
               </Link>
-              {data.categories.map((cat) => (
+              {data.categories.map((cat: any) => (
                 <Link
                   key={cat.slug}
                   href={`/explore?category=${cat.slug}`}
