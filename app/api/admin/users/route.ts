@@ -2,9 +2,9 @@ import { NextRequest } from 'next/server';
 import { success, error, requireAdmin } from '../../helpers';
 import { getDatabase } from '@/infrastructure/db/client';
 import {
-  reviews,
-  items,
   users,
+  userProfiles,
+  reviews,
 } from '@/infrastructure/db/schema';
 import {
   eq,
@@ -27,36 +27,26 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, parseInt(searchParams.get('limit') || '25'));
     const sort = searchParams.get('sort') || 'createdAt';
     const order = searchParams.get('order') || 'desc';
-    const statusFilter = searchParams.get('status') || '';
     const search = searchParams.get('search') || '';
-    const rating = searchParams.get('rating');
-    const itemId = searchParams.get('itemId');
+    const roleFilter = searchParams.get('role') || '';
 
     // Build conditions
     const conditions: any[] = [];
 
-    if (statusFilter) {
-      conditions.push(eq(reviews.status, statusFilter));
-    }
-
     if (search) {
       conditions.push(
-        sql`(${reviews.title} ILIKE ${`%${search}%`} OR ${reviews.body} ILIKE ${`%${search}%`})`
+        sql`(${users.name} ILIKE ${`%${search}%`} OR ${users.email} ILIKE ${`%${search}%`})`
       );
     }
 
-    if (rating) {
-      conditions.push(eq(reviews.rating, parseInt(rating)));
-    }
-
-    if (itemId) {
-      conditions.push(eq(reviews.itemId, parseInt(itemId)));
+    if (roleFilter) {
+      conditions.push(eq(users.role, roleFilter));
     }
 
     // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
-      .from(reviews)
+      .from(users)
       .where(and(...conditions));
 
     const total = Number(countResult[0]?.count ?? 0);
@@ -64,41 +54,33 @@ export async function GET(request: NextRequest) {
 
     // Get sort column and direction
     let orderByClause: any;
-    const sortColumn = (reviews as any)[sort as keyof typeof reviews] || reviews.createdAt;
+    const sortColumn = (users as any)[sort as keyof typeof users] || users.createdAt;
     orderByClause = order === 'desc' ? desc(sortColumn) : asc(sortColumn);
 
-    // Get paginated reviews with item and user details
-    const reviewsData = await db
+    // Get paginated users with review count and profile data
+    const usersData = await db
       .select({
-        id: reviews.id,
-        itemId: reviews.itemId,
-        itemName: items.name,
-        userId: reviews.userId,
-        userName: users.name,
-        userEmail: users.email,
-        rating: reviews.rating,
-        title: reviews.title,
-        body: reviews.body,
-        pros: reviews.pros,
-        cons: reviews.cons,
-        visitedAt: reviews.visitedAt,
-        status: reviews.status,
-        autoApproved: reviews.autoApproved,
-        adminNote: reviews.adminNote,
-        helpfulCount: reviews.helpfulCount,
-        createdAt: reviews.createdAt,
-        updatedAt: reviews.updatedAt,
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        emailVerified: users.emailVerified,
+        avatarUrl: users.avatarUrl,
+        role: users.role,
+        bio: users.bio,
+        reviewCount: users.reviewCount,
+        createdAt: users.createdAt,
+        level: userProfiles.level,
+        totalPoints: userProfiles.totalPoints,
       })
-      .from(reviews)
-      .leftJoin(items, eq(reviews.itemId, items.id))
-      .leftJoin(users, eq(reviews.userId, users.id))
+      .from(users)
+      .leftJoin(userProfiles, eq(userProfiles.userId, users.id))
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(orderByClause)
       .limit(limit)
       .offset((page - 1) * limit);
 
     return success({
-      reviews: reviewsData,
+      users: usersData,
       total,
       page,
       limit,
@@ -123,24 +105,43 @@ export async function PATCH(request: NextRequest) {
     const action = body.action;
 
     if (!action) {
-      return error('action field is required (approve, reject)', 400);
+      return error('action field is required (makeAdmin, removeAdmin, ban, unban)', 400);
     }
 
-    if (action === 'approve') {
-      await db
-        .update(reviews)
-        .set({ status: 'approved', updatedAt: new Date() })
-        .where(inArray(reviews.id, body.ids));
-    } else if (action === 'reject') {
-      await db
-        .update(reviews)
-        .set({ status: 'rejected', updatedAt: new Date() })
-        .where(inArray(reviews.id, body.ids));
-    } else {
-      return error('Invalid action. Must be approve or reject', 400);
+    switch (action) {
+      case 'makeAdmin':
+        await db
+          .update(users)
+          .set({ role: 'admin' })
+          .where(inArray(users.id, body.ids));
+        break;
+
+      case 'removeAdmin':
+        await db
+          .update(users)
+          .set({ role: 'user' })
+          .where(inArray(users.id, body.ids));
+        break;
+
+      case 'ban':
+        await db
+          .update(users)
+          .set({ role: 'banned' })
+          .where(inArray(users.id, body.ids));
+        break;
+
+      case 'unban':
+        await db
+          .update(users)
+          .set({ role: 'user' })
+          .where(inArray(users.id, body.ids));
+        break;
+
+      default:
+        return error('Invalid action', 400);
     }
 
-    return success({ message: `Successfully ${action}ed ${body.ids.length} reviews` });
+    return success({ message: `Successfully ${action}d ${body.ids.length} users` });
   } catch (err) {
     return error((err as Error).message, 500);
   }
