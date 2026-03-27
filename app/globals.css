@@ -26,4 +26,30 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Horizontal scroll snap container */
+  .scroll-snap-x {
+    scroll-snap-type: x mandatory;
+    scroll-padding: 1rem;
+  }
+
+  .scroll-snap-item {
+    scroll-snap-align: start;
+  }
+
+  /* Hide scrollbar while keeping functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Smooth scrolling animation for horizontal scroll */
+  .scroll-smooth-x {
+    scroll-behavior: smooth;
+    overflow-x: auto;
+  }
 }

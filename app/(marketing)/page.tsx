@@ -2,9 +2,9 @@ import Link from 'next/link';
 import StaggerText from '@/presentation/components/animations/StaggerText';
 import FadeUp from '@/presentation/components/animations/FadeUp';
 import CountUp from '@/presentation/components/animations/CountUp';
-import ItemCard from '@/presentation/components/items/ItemCard';
 import Button from '@/presentation/components/ui/Button';
-import { GetFeaturedItems } from '@/application/usecases/items/GetFeaturedItems';
+import CategorySection from '@/presentation/components/home/CategorySection';
+import { GetItemsByCategory } from '@/application/usecases/items/GetItemsByCategory';
 import { getItemRepository } from '@/infrastructure/repositories';
 import { db } from '@/infrastructure/db/client';
 import { categories, items, reviews } from '@/infrastructure/db/schema';
@@ -29,15 +29,6 @@ async function getStats() {
   }
 }
 
-async function getFeatured() {
-  try {
-    const useCase = new GetFeaturedItems(getItemRepository());
-    return await useCase.execute(6);
-  } catch {
-    return [];
-  }
-}
-
 async function getCategories() {
   try {
     return await db.select().from(categories);
@@ -46,57 +37,140 @@ async function getCategories() {
   }
 }
 
+async function getItemsByCategory(categorySlug: string, limit: number = 8) {
+  try {
+    const useCase = new GetItemsByCategory(getItemRepository());
+    const result = await useCase.execute({
+      categorySlug,
+      limit,
+      offset: 0,
+    });
+    return result.items.map((item: any) => ({
+      slug: item.slug,
+      name: item.name,
+      imageUrl: item.imageUrl,
+      governorate: item.governorate,
+      area: item.area,
+      avgRating: item.averageRating,
+      totalReviews: item.totalReviews,
+      priceLabel: item.priceRange,
+      tags: item.tags || null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
-  const [stats, featured, cats] = await Promise.all([
+  const [stats, allCategories] = await Promise.all([
     getStats(),
-    getFeatured(),
     getCategories(),
   ]);
 
+  // Map category data for organized sections
+  // Define which categories to show and their order
+  const categorySlugs = ['restaurants-food', 'cafes-coffee', 'hotels-accommodations', 'beaches-resorts', 'shopping-malls', 'historical-sites'];
+  const categoryTitles: Record<string, { title: string; description: string; isDark: boolean }> = {
+    'restaurants-food': {
+      title: 'Taste of Egypt',
+      description: 'Discover the finest restaurants serving authentic and modern cuisine',
+      isDark: true,
+    },
+    'cafes-coffee': {
+      title: 'Coffee & Vibes',
+      description: 'Explore cozy cafes perfect for work, meetings, or relaxation',
+      isDark: false,
+    },
+    'hotels-accommodations': {
+      title: 'Where to Stay',
+      description: 'Find the perfect accommodation for your Egyptian adventure',
+      isDark: true,
+    },
+    'beaches-resorts': {
+      title: 'Sun & Sea',
+      description: 'Relax at Egypt\'s most beautiful coastal destinations',
+      isDark: false,
+    },
+    'shopping-malls': {
+      title: 'Shopping Destination',
+      description: 'Browse the best shopping centers across Egypt',
+      isDark: true,
+    },
+    'historical-sites': {
+      title: 'Rich Heritage',
+      description: 'Explore Egypt\'s iconic historical landmarks and cultural sites',
+      isDark: false,
+    },
+  };
+
+  // Fetch items for each category in parallel
+  const itemsByCategory = await Promise.all(
+    categorySlugs.map(slug => getItemsByCategory(slug, 8))
+  );
+
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 py-20 sm:py-32">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+    <div className="overflow-hidden">
+      {/* Hero Section */}
+      <section
+        className="relative overflow-hidden py-20 sm:py-32 md:py-40"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1549144611-11a0be0db8de?w=1500&h=600&fit=crop)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/50"></div>
+
+        {/* Content */}
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <StaggerText
             text="Rate anything in Egypt."
-            className="font-display text-4xl sm:text-6xl lg:text-7xl text-secondary leading-tight"
+            className="font-display text-4xl sm:text-6xl lg:text-7xl text-white leading-tight drop-shadow-lg"
           />
           <FadeUp delay={0.5}>
-            <p className="mt-6 text-lg sm:text-xl text-text-muted max-w-2xl mx-auto font-body">
-              Discover, review, and rate the best restaurants, products, cafes, gyms, beaches, and more across Egypt.
+            <p className="mt-6 text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-body drop-shadow-md">
+              Discover, review, and rate the best restaurants, cafes, hotels, beaches, shopping, historical sites, and more across Egypt.
             </p>
           </FadeUp>
           <FadeUp delay={0.7}>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/explore">
                 <Button size="lg">Explore Now</Button>
               </Link>
               <Link href="/submit">
-                <Button variant="outline" size="lg">Add Something</Button>
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                  Add Something
+                </Button>
               </Link>
             </div>
           </FadeUp>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-16 sm:py-24">
+      {/* Category Grid */}
+      <section className="py-16 sm:py-24 bg-background">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FadeUp>
-            <h2 className="font-display text-3xl sm:text-4xl text-secondary text-center">Browse by Category</h2>
+            <div className="text-center mb-12">
+              <h2 className="font-display text-3xl sm:text-4xl text-secondary mb-3">Browse Categories</h2>
+              <p className="text-text-muted max-w-2xl mx-auto">
+                Explore curated collections across all of Egypt
+              </p>
+            </div>
           </FadeUp>
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {cats.map((cat: any, i: number) => (
-              <FadeUp key={cat.slug} delay={i * 0.1}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {allCategories.map((cat: any, i: number) => (
+              <FadeUp key={cat.slug} delay={i * 0.05}>
                 <Link
                   href={`/explore/${cat.slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-card bg-surface p-6 shadow-card transition-all duration-200 hover:-translate-y-1 hover:shadow-card-hover"
+                  className="group flex flex-col items-center gap-3 rounded-card bg-surface p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                    <span className="text-xl">{cat.icon ?? '📍'}</span>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                    <span className="text-2xl">{cat.icon ?? '📍'}</span>
                   </div>
-                  <span className="text-sm font-semibold text-center text-secondary">{cat.name}</span>
+                  <span className="text-sm font-semibold text-center text-secondary leading-tight">{cat.name}</span>
                   <span className="text-xs text-text-muted">{cat.itemCount ?? 0} items</span>
                 </Link>
               </FadeUp>
@@ -105,69 +179,74 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured */}
-      {featured.length > 0 && (
-        <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-primary/5">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <FadeUp>
-              <h2 className="font-display text-3xl sm:text-4xl text-secondary text-center">What's Hot Right Now</h2>
-              <p className="mt-3 text-text-muted text-center">Top-rated and trending across Egypt</p>
-            </FadeUp>
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.map((item, i) => (
-                <FadeUp key={item.slug} delay={i * 0.1}>
-                  <ItemCard
-                    slug={item.slug}
-                    name={item.name}
-                    imageUrl={item.imageUrl}
-                    governorate={item.governorate}
-                    area={item.area}
-                    avgRating={item.avgRating}
-                    totalReviews={item.totalReviews}
-                    priceLabel={item.priceLabel}
-                    tags={item.tags}
-                  />
-                </FadeUp>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Category Showcase Sections */}
+      {categorySlugs.map((slug, index) => {
+        const categoryConfig = categoryTitles[slug];
+        const items = itemsByCategory[index];
 
-      {/* Stats */}
-      <section className="py-16 sm:py-24">
+        if (!items || items.length === 0) return null;
+
+        return (
+          <CategorySection
+            key={slug}
+            title={categoryConfig.title}
+            description={categoryConfig.description}
+            items={items}
+            categorySlug={slug}
+            isDark={categoryConfig.isDark}
+          />
+        );
+      })}
+
+      {/* Stats Section */}
+      <section className="py-16 sm:py-24 bg-secondary">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 text-center">
             <FadeUp>
               <div className="p-6">
-                <CountUp end={stats.items} className="block font-display text-5xl text-primary" />
-                <span className="mt-2 block text-text-muted font-body">Items Rated</span>
+                <CountUp
+                  end={stats.items}
+                  className="block font-display text-5xl sm:text-6xl text-primary drop-shadow-lg"
+                />
+                <span className="mt-3 block text-white/80 font-body text-lg">Items Rated</span>
               </div>
             </FadeUp>
             <FadeUp delay={0.15}>
               <div className="p-6">
-                <CountUp end={stats.reviews} className="block font-display text-5xl text-accent-gold" />
-                <span className="mt-2 block text-text-muted font-body">Reviews</span>
+                <CountUp
+                  end={stats.reviews}
+                  className="block font-display text-5xl sm:text-6xl text-accent-gold drop-shadow-lg"
+                />
+                <span className="mt-3 block text-white/80 font-body text-lg">Reviews</span>
               </div>
             </FadeUp>
             <FadeUp delay={0.3}>
               <div className="p-6">
-                <CountUp end={stats.categories} className="block font-display text-5xl text-accent-green" />
-                <span className="mt-2 block text-text-muted font-body">Categories</span>
+                <CountUp
+                  end={stats.categories}
+                  className="block font-display text-5xl sm:text-6xl text-accent-green drop-shadow-lg"
+                />
+                <span className="mt-3 block text-white/80 font-body text-lg">Categories</span>
               </div>
             </FadeUp>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 sm:py-24 bg-secondary">
+      {/* CTA Section */}
+      <section className="py-16 sm:py-24 bg-gradient-to-r from-primary to-primary/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <FadeUp>
-            <h2 className="font-display text-3xl sm:text-4xl text-white">Found something worth rating?</h2>
-            <p className="mt-4 text-white/60 font-body">Help the community discover the best of Egypt.</p>
-            <Link href="/submit" className="mt-8 inline-block">
-              <Button size="lg">Add It Now</Button>
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-white mb-4">
+              Found something worth rating?
+            </h2>
+            <p className="text-white/90 font-body text-lg max-w-2xl mx-auto mb-8">
+              Help the community discover the best of Egypt by adding and reviewing your favorite places.
+            </p>
+            <Link href="/submit">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                Add It Now
+              </Button>
             </Link>
           </FadeUp>
         </div>
