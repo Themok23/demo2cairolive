@@ -69,9 +69,7 @@ export default async function HomePage() {
     getCategories(),
   ]);
 
-  // Map category data for organized sections
-  // Define which categories to show and their order
-  const categorySlugs = ['restaurants-food', 'cafes-coffee', 'hotels-accommodations', 'beaches-resorts', 'shopping-malls', 'historical-sites'];
+  const categorySlugs = ['restaurants-food', 'cafes-coffee', 'skincare-cosmetics', 'beaches-resorts', 'gyms-fitness', 'street-food'];
   const categoryTitles: Record<string, { title: string; description: string; isDark: boolean }> = {
     'restaurants-food': {
       title: 'Taste of Egypt',
@@ -83,29 +81,28 @@ export default async function HomePage() {
       description: 'Explore cozy cafes perfect for work, meetings, or relaxation',
       isDark: false,
     },
-    'hotels-accommodations': {
-      title: 'Where to Stay',
-      description: 'Find the perfect accommodation for your Egyptian adventure',
+    'skincare-cosmetics': {
+      title: 'Beauty & Skincare',
+      description: 'Top rated skincare and cosmetics brands in Egypt',
       isDark: true,
     },
     'beaches-resorts': {
       title: 'Sun & Sea',
-      description: 'Relax at Egypt\'s most beautiful coastal destinations',
+      description: "Relax at Egypt's most beautiful coastal destinations",
       isDark: false,
     },
-    'shopping-malls': {
-      title: 'Shopping Destination',
-      description: 'Browse the best shopping centers across Egypt',
+    'gyms-fitness': {
+      title: 'Fitness & Wellness',
+      description: 'Stay active with the best gyms and fitness centers across Egypt',
       isDark: true,
     },
-    'historical-sites': {
-      title: 'Rich Heritage',
-      description: 'Explore Egypt\'s iconic historical landmarks and cultural sites',
+    'street-food': {
+      title: 'Street Food Gems',
+      description: "The authentic street food that makes Egypt's food culture legendary",
       isDark: false,
     },
   };
 
-  // Fetch items for each category in parallel
   const itemsByCategory = await Promise.all(
     categorySlugs.map(slug => getItemsByCategory(slug, 8))
   );
@@ -116,16 +113,12 @@ export default async function HomePage() {
       <section
         className="relative overflow-hidden py-20 sm:py-32 md:py-40"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1549144611-11a0be0db8de?w=1500&h=600&fit=crop)',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=1500&h=600&fit=crop)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
         }}
       >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/50"></div>
-
-        {/* Content */}
+        <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <StaggerText
             text="Rate anything in Egypt."
@@ -133,18 +126,20 @@ export default async function HomePage() {
           />
           <FadeUp delay={0.5}>
             <p className="mt-6 text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-body drop-shadow-md">
-              Discover, review, and rate the best restaurants, cafes, hotels, beaches, shopping, historical sites, and more across Egypt.
+              Discover, review, and rate the best restaurants, cafes, beaches, fitness, skincare, street food, and more across Egypt.
             </p>
           </FadeUp>
           <FadeUp delay={0.7}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/explore">
-                <Button size="lg">Explore Now</Button>
+                <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02]">
+                  Explore Now
+                </button>
               </Link>
               <Link href="/submit">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200">
                   Add Something
-                </Button>
+                </button>
               </Link>
             </div>
           </FadeUp>
@@ -167,7 +162,7 @@ export default async function HomePage() {
               <FadeUp key={cat.slug} delay={i * 0.05}>
                 <Link
                   href={`/explore/${cat.slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-card bg-surface p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover"
+                  className="group flex flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                     <span className="text-2xl">{cat.icon ?? '📍'}</span>
@@ -184,16 +179,16 @@ export default async function HomePage() {
       {/* Category Showcase Sections */}
       {categorySlugs.map((slug, index) => {
         const categoryConfig = categoryTitles[slug];
-        const items = itemsByCategory[index];
+        const categoryItems = itemsByCategory[index];
 
-        if (!items || items.length === 0) return null;
+        if (!categoryItems || categoryItems.length === 0) return null;
 
         return (
           <CategorySection
             key={slug}
             title={categoryConfig.title}
             description={categoryConfig.description}
-            items={items}
+            items={categoryItems}
             categorySlug={slug}
             isDark={categoryConfig.isDark}
           />
@@ -242,7 +237,7 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-r from-primary to-primary/80">
+      <section className="py-16 sm:py-24 bg-primary">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <FadeUp>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-white mb-4">
@@ -252,9 +247,9 @@ export default async function HomePage() {
               Help the community discover the best of Egypt by adding and reviewing your favorite places.
             </p>
             <Link href="/submit">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200">
                 Add It Now
-              </Button>
+              </button>
             </Link>
           </FadeUp>
         </div>

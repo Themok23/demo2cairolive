@@ -38,10 +38,10 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-sm uppercase tracking-wider text-white/50 mb-5">Platform</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/submit" className="text-white/70 hover:text-primary transition-colors duration-200">Add an Item</Link></li>
+              <li><Link href="/rewards" className="text-white/70 hover:text-primary transition-colors duration-200">Rewards</Link></li>
+              <li><Link href="/leaderboard" className="text-white/70 hover:text-primary transition-colors duration-200">Leaderboard</Link></li>
               <li><Link href="/auth/signup" className="text-white/70 hover:text-primary transition-colors duration-200">Create Account</Link></li>
               <li><Link href="/auth/signin" className="text-white/70 hover:text-primary transition-colors duration-200">Sign In</Link></li>
-              <li><Link href="/" className="text-white/70 hover:text-primary transition-colors duration-200">Home</Link></li>
             </ul>
           </div>
 
@@ -78,16 +78,19 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-white/10"></div>
-
-        {/* Bottom Footer */}
-        <div className="mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+        {/* Divider + Copyright */}
+        <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50">
+          <p>&copy; {currentYear} demo2cairolive. All rights reserved.</p>
           <p>
-            Built with care in Cairo. demo2cairolive {currentYear}.
-          </p>
-          <p>
-            by <span className="text-primary font-semibold">The Mok Company</span>
+            by{' '}
+            <a
+              href="https://themok.company"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary font-semibold hover:text-primary/80 transition-colors"
+            >
+              The Mok Company
+            </a>
           </p>
         </div>
       </div>
