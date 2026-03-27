@@ -24,6 +24,12 @@ interface CategorySectionProps {
   variant: 'featured' | 'masonry' | 'magazine' | 'banner' | 'bold-grid' | 'filmstrip';
 }
 
+
+function safeRating(val: string): string {
+  const n = parseFloat(val);
+  return isNaN(n) || n === 0 ? 'New' : n.toFixed(1);
+}
+
 export default function CategorySection({
   title,
   description,
@@ -91,7 +97,7 @@ export default function CategorySection({
                     </div>
                     <div className="mt-3 flex items-center gap-1">
                       <Star size={16} className="fill-accent-gold text-accent-gold" />
-                      <span className="font-semibold">{parseFloat(featured.avgRating).toFixed(1)}</span>
+                      <span className="font-semibold">{safeRating(featured.avgRating)}</span>
                       <span className="text-white/70">({featured.totalReviews})</span>
                     </div>
                   </div>
@@ -127,7 +133,7 @@ export default function CategorySection({
                       <div className="mt-2 flex items-center gap-1">
                         <Star size={14} className="fill-accent-gold text-accent-gold" />
                         <span className="text-xs font-semibold text-white">
-                          {parseFloat(item.avgRating).toFixed(1)}
+                          {safeRating(item.avgRating)}
                         </span>
                         <span className="text-xs text-white/70">({item.totalReviews})</span>
                       </div>
@@ -196,7 +202,7 @@ export default function CategorySection({
                       <div className="mt-2 flex items-center gap-1">
                         <Star size={14} className="fill-accent-gold text-accent-gold" />
                         <span className="text-xs font-semibold text-secondary">
-                          {parseFloat(item.avgRating).toFixed(1)}
+                          {safeRating(item.avgRating)}
                         </span>
                         <span className="text-xs text-text-muted">({item.totalReviews})</span>
                       </div>
@@ -265,7 +271,7 @@ export default function CategorySection({
                         </div>
                         <div className="mt-3 flex items-center gap-1">
                           <Star size={16} className="fill-accent-gold text-accent-gold" />
-                          <span className="font-semibold">{parseFloat(item.avgRating).toFixed(1)}</span>
+                          <span className="font-semibold">{safeRating(item.avgRating)}</span>
                           <span className="text-white/70">({item.totalReviews})</span>
                         </div>
                       </div>
@@ -358,7 +364,7 @@ export default function CategorySection({
                     <div className="mt-2 flex items-center gap-1">
                       <Star size={14} className="fill-accent-gold text-accent-gold" />
                       <span className="text-xs font-semibold text-secondary">
-                        {parseFloat(item.avgRating).toFixed(1)}
+                        {safeRating(item.avgRating)}
                       </span>
                       <span className="text-xs text-text-muted">({item.totalReviews})</span>
                     </div>
@@ -428,7 +434,7 @@ export default function CategorySection({
                     </div>
                     <div className="mt-3 flex items-center gap-1">
                       <Star size={14} className="fill-accent-gold text-accent-gold" />
-                      <span className="text-sm font-bold text-white">{parseFloat(item.avgRating).toFixed(1)}</span>
+                      <span className="text-sm font-bold text-white">{safeRating(item.avgRating)}</span>
                       <span className="text-xs text-white/50">({item.totalReviews})</span>
                     </div>
                   </div>
@@ -490,7 +496,7 @@ export default function CategorySection({
                       <div className="mt-2 flex items-center justify-center gap-1">
                         <Star size={12} className="fill-accent-gold text-accent-gold" />
                         <span className="text-xs font-semibold text-secondary">
-                          {parseFloat(item.avgRating).toFixed(1)}
+                          {safeRating(item.avgRating)}
                         </span>
                       </div>
                     </div>

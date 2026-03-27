@@ -53,8 +53,8 @@ async function getItemsByCategory(categorySlug: string, limit: number = 8) {
       imageUrl: item.imageUrl,
       governorate: item.governorate,
       area: item.area,
-      avgRating: item.averageRating,
-      totalReviews: item.totalReviews,
+      avgRating: String(item.averageRating ?? '0'),
+      totalReviews: Number(item.totalReviews ?? 0),
       priceLabel: item.priceRange,
       tags: item.tags || null,
     }));
