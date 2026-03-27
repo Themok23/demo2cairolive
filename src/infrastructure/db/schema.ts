@@ -92,3 +92,56 @@ export const adminSettings = pgTable('admin_settings', {
   value: text('value').notNull(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+export const userProfiles = pgTable('user_profiles', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull().unique(),
+  level: varchar('level', { length: 20 }).default('explorer'),
+  approvedReviewCount: integer('approved_review_count').default(0),
+  totalPoints: integer('total_points').default(0),
+  joinedAt: timestamp('joined_at').defaultNow(),
+  bio: text('bio'),
+  avatarUrl: varchar('avatar_url', { length: 500 }),
+  badgesJson: text('badges_json').default('[]'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const membershipLevels = pgTable('membership_levels', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull(),
+  nameAr: varchar('name_ar', { length: 100 }),
+  slug: varchar('slug', { length: 50 }).notNull().unique(),
+  minReviews: integer('min_reviews').notNull(),
+  icon: varchar('icon', { length: 50 }),
+  color: varchar('color', { length: 20 }),
+  perksJson: text('perks_json').default('[]'),
+  discountPercent: integer('discount_percent').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const rewards = pgTable('rewards', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 200 }).notNull(),
+  titleAr: varchar('title_ar', { length: 200 }),
+  description: text('description').notNull(),
+  descriptionAr: text('description_ar'),
+  imageUrl: varchar('image_url', { length: 500 }),
+  partnerName: varchar('partner_name', { length: 150 }).notNull(),
+  partnerLogo: varchar('partner_logo', { length: 500 }),
+  discountPercent: integer('discount_percent').notNull(),
+  discountCode: varchar('discount_code', { length: 50 }),
+  minLevel: varchar('min_level', { length: 20 }).default('explorer'),
+  category: varchar('category', { length: 50 }).notNull(),
+  isActive: boolean('is_active').default(true),
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const rewardClaims = pgTable('reward_claims', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  rewardId: integer('reward_id').references(() => rewards.id).notNull(),
+  claimedAt: timestamp('claimed_at').defaultNow(),
+});

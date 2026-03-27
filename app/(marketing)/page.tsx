@@ -4,6 +4,8 @@ import FadeUp from '@/presentation/components/animations/FadeUp';
 import CountUp from '@/presentation/components/animations/CountUp';
 import Button from '@/presentation/components/ui/Button';
 import CategorySection from '@/presentation/components/home/CategorySection';
+import MembershipLevels from '@/presentation/components/home/MembershipLevels';
+import TopContributors from '@/presentation/components/home/TopContributors';
 import { GetItemsByCategory } from '@/application/usecases/items/GetItemsByCategory';
 import { getItemRepository } from '@/infrastructure/repositories';
 import { db } from '@/infrastructure/db/client';
@@ -197,6 +199,12 @@ export default async function HomePage() {
           />
         );
       })}
+
+      {/* Membership Levels Section */}
+      <MembershipLevels />
+
+      {/* Top Contributors Section */}
+      <TopContributors />
 
       {/* Stats Section */}
       <section className="py-16 sm:py-24 bg-secondary">

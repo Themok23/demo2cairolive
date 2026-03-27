@@ -22,6 +22,10 @@ export default function Navbar() {
               Explore
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" />
             </Link>
+            <Link href="/rewards" className="relative text-sm font-semibold text-text-primary hover:text-primary transition-colors group">
+              Rewards
+              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" />
+            </Link>
             <Link href="/submit" className="relative text-sm font-semibold text-text-primary hover:text-primary transition-colors group">
               Add Item
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" />
@@ -58,6 +62,9 @@ export default function Navbar() {
           <div className="md:hidden border-t border-muted py-4 space-y-3">
             <Link href="/explore" className="block py-2 text-sm font-semibold text-text-primary hover:text-primary">
               Explore
+            </Link>
+            <Link href="/rewards" className="block py-2 text-sm font-semibold text-text-primary hover:text-primary">
+              Rewards
             </Link>
             <Link href="/submit" className="block py-2 text-sm font-semibold text-text-primary hover:text-primary">
               Add Item
