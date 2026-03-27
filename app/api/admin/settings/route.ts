@@ -1,10 +1,11 @@
 import { NextRequest } from 'next/server';
-import { success, error, requireAdmin } from '../../helpers';
+import { success, error } from '../../helpers';
+import { requireDashboardAuth } from '../adminAuth';
 import { getAdminSettingsRepository } from '@/infrastructure/repositories';
 
 export async function GET() {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const repo = getAdminSettingsRepository();
     const settings = await repo.getAll();
     return success(settings);
@@ -15,7 +16,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const { key, value } = await request.json();
     if (!key || value === undefined) return error('key and value are required');
     const repo = getAdminSettingsRepository();

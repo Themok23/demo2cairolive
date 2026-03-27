@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { error, requireAdmin } from '../../helpers';
+import { error } from '../../helpers';
+import { requireDashboardAuth } from '../adminAuth';
 import { getDatabase } from '@/infrastructure/db/client';
 import {
   items,
@@ -36,7 +37,7 @@ function convertToCSV(data: any[]): string {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const searchParams = request.nextUrl.searchParams;

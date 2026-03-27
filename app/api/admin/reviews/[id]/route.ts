@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { success, error, requireAdmin } from '../../../helpers';
+import { success, error } from '../../../helpers';
+import { requireDashboardAuth } from '../../adminAuth';
 import { getDatabase } from '@/infrastructure/db/client';
 import { reviews, items, users } from '@/infrastructure/db/schema';
 import { eq } from 'drizzle-orm';
@@ -9,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const reviewId = parseInt(params.id);
@@ -59,7 +60,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const reviewId = parseInt(params.id);
@@ -111,7 +112,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const reviewId = parseInt(params.id);

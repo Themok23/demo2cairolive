@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server';
-import { success, error, requireAdmin } from '../../../helpers';
+import { success, error } from '../../../helpers';
+import { requireDashboardAuth } from '../../adminAuth';
 import { getDatabase } from '@/infrastructure/db/client';
 import { rewards } from '@/infrastructure/db/schema';
 import { desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const rewardsData = await db
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const body = await request.json();

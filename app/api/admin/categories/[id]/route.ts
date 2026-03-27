@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { success, error, requireAdmin } from '../../../helpers';
+import { success, error } from '../../../helpers';
+import { requireDashboardAuth } from '../../adminAuth';
 import { getDatabase } from '@/infrastructure/db/client';
 import {
   categories,
@@ -12,7 +13,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const categoryId = parseInt(params.id);
@@ -74,7 +75,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const categoryId = parseInt(params.id);

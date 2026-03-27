@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { success, error, requireAdmin } from '../../helpers';
+import { success, error } from '../../helpers';
+import { requireDashboardAuth } from '../adminAuth';
 import { getDatabase } from '@/infrastructure/db/client';
 import {
   users,
@@ -18,7 +19,7 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     // Parse query parameters
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    await requireAdmin();
+    await requireDashboardAuth();
     const db = getDatabase();
 
     const body = await request.json();
