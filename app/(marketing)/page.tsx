@@ -70,36 +70,36 @@ export default async function HomePage() {
   ]);
 
   const categorySlugs = ['restaurants-food', 'cafes-coffee', 'skincare-cosmetics', 'beaches-resorts', 'gyms-fitness', 'street-food'];
-  const categoryTitles: Record<string, { title: string; description: string; isDark: boolean }> = {
+  const categoryTitles: Record<string, { title: string; description: string; variant: 'featured' | 'masonry' | 'magazine' | 'banner' | 'bold-grid' | 'filmstrip' }> = {
     'restaurants-food': {
       title: 'Taste of Egypt',
       description: 'Discover the finest restaurants serving authentic and modern cuisine',
-      isDark: true,
+      variant: 'featured',
     },
     'cafes-coffee': {
       title: 'Coffee & Vibes',
       description: 'Explore cozy cafes perfect for work, meetings, or relaxation',
-      isDark: false,
+      variant: 'masonry',
     },
     'skincare-cosmetics': {
       title: 'Beauty & Skincare',
       description: 'Top rated skincare and cosmetics brands in Egypt',
-      isDark: true,
+      variant: 'magazine',
     },
     'beaches-resorts': {
       title: 'Sun & Sea',
       description: "Relax at Egypt's most beautiful coastal destinations",
-      isDark: false,
+      variant: 'banner',
     },
     'gyms-fitness': {
       title: 'Fitness & Wellness',
       description: 'Stay active with the best gyms and fitness centers across Egypt',
-      isDark: true,
+      variant: 'bold-grid',
     },
     'street-food': {
       title: 'Street Food Gems',
       description: "The authentic street food that makes Egypt's food culture legendary",
-      isDark: false,
+      variant: 'filmstrip',
     },
   };
 
@@ -190,7 +190,7 @@ export default async function HomePage() {
             description={categoryConfig.description}
             items={categoryItems}
             categorySlug={slug}
-            isDark={categoryConfig.isDark}
+            variant={categoryConfig.variant}
           />
         );
       })}
