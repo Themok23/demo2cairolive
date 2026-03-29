@@ -1,10 +1,180 @@
 {
   "common": {
-    "home": "Accueil",
+    "appName": "demo2cairolive",
+    "loading": "Chargement...",
+    "or": "ou",
+    "all": "Tous",
+    "viewAll": "Voir tout",
+    "back": "Retour",
+    "writeReview": "Écrire un avis",
+    "viewDetails": "Voir les détails",
+    "viewFullLeaderboard": "Voir le classement complet",
+    "found": "l'ont trouvé utile"
+  },
+  "nav": {
     "explore": "Explorer",
     "rewards": "Récompenses",
     "addItem": "Ajouter un élément",
-    "signIn": "Se connecter",
+    "addSomething": "Ajouter quelque chose",
+    "signIn": "Se connecter"
+  },
+  "hero": {
+    "title": "Évaluez n'importe quoi en Égypte.",
+    "subtitle": "Découvrez, évaluez et notez les meilleurs restaurants, cafés, plages, centres de fitness, soins de la peau, nourriture de rue et bien plus à travers l'Égypte.",
+    "exploreNow": "Explorer maintenant",
     "addSomething": "Ajouter quelque chose"
+  },
+  "categories": {
+    "title": "Parcourir les catégories",
+    "subtitle": "Explorez des collections organisées dans toute l'Égypte",
+    "items": "éléments"
+  },
+  "categoryTitles": {
+    "restaurants": "Le goût de l'Égypte",
+    "restaurantsDesc": "Découvrez les meilleurs restaurants proposant une cuisine authentique et moderne",
+    "cafes": "Café et ambiance",
+    "cafesDesc": "Explorez des cafés confortables parfaits pour le travail, les réunions ou la détente",
+    "skincare": "Beauté et soins de la peau",
+    "skincareDesc": "Les meilleures marques de soins de la peau et de cosmétiques en Égypte",
+    "beaches": "Soleil et mer",
+    "beachesDesc": "Détendez-vous dans les plus belles destinations côtières d'Égypte",
+    "gyms": "Fitness et bien-être",
+    "gymsDesc": "Restez actif avec les meilleures salles de sport et centres de fitness en Égypte",
+    "streetFood": "Perles de la nourriture de rue",
+    "streetFoodDesc": "La nourriture de rue authentique qui rend la culture culinaire égyptienne légendaire"
+  },
+  "stats": {
+    "itemsRated": "Éléments évalués",
+    "reviews": "Avis",
+    "categories": "Catégories"
+  },
+  "cta": {
+    "title": "Avez-vous trouvé quelque chose qui mérite d'être noté?",
+    "subtitle": "Aidez la communauté à découvrir le meilleur de l'Égypte en ajoutant et en évaluant vos endroits préférés.",
+    "addItNow": "Ajoutez-le maintenant"
+  },
+  "auth": {
+    "signInTitle": "Se connecter à votre compte",
+    "signUpTitle": "Créer votre compte",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "fullName": "Nom complet",
+    "confirmPassword": "Confirmer le mot de passe",
+    "continueWithGoogle": "Continuer avec Google",
+    "signUpWithGoogle": "S'inscrire avec Google",
+    "signingIn": "Connexion en cours...",
+    "creatingAccount": "Création du compte...",
+    "noAccount": "Vous n'avez pas de compte?",
+    "hasAccount": "Vous avez déjà un compte?",
+    "invalidCredentials": "Adresse e-mail ou mot de passe invalide",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordMinLength": "Le mot de passe doit comporter au moins 8 caractères",
+    "registrationFailed": "L'enregistrement a échoué",
+    "signInFailed": "La connexion a échoué après l'enregistrement",
+    "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+    "emailPlaceholder": "vous@exemple.com",
+    "passwordPlaceholder": "Votre mot de passe",
+    "namePlaceholder": "Votre nom",
+    "confirmPlaceholder": "Confirmez votre mot de passe",
+    "atLeast8": "Au moins 8 caractères"
+  },
+  "rewards": {
+    "title": "Récompenses et réductions exclusives",
+    "subtitle": "Débloquez des offres incroyables de nos marques partenaires en renforçant votre réputation dans la communauté",
+    "pathToBeenefits": "Votre chemin vers les avantages",
+    "completePath": "Complétez plus d'avis pour déverrouiller des niveaux d'adhésion plus élevés et des réductions plus importantes",
+    "featuredOffers": "Offres en vedette",
+    "partnerDiscounts": "Réductions des partenaires adaptées à nos membres de la communauté",
+    "noRewardsInCategory": "Aucune récompense disponible dans cette catégorie",
+    "startEarning": "Commencez à gagner des récompenses aujourd'hui",
+    "writeFirstReview": "Écrivez votre premier avis et rejoignez des milliers de membres de la communauté qui profitent d'avantages exclusifs.",
+    "loading": "Chargement des récompenses..."
+  },
+  "membership": {
+    "title": "Parcours d'adhésion",
+    "subtitle": "Construisez votre réputation en contribuant des avis et débloquez des réductions exclusives à chaque niveau",
+    "reviewsRequired": "{count} avis requis",
+    "discount": "{percent}% de réduction",
+    "unlockPerks": "Déverrouiller les récompenses et avantages exclusifs",
+    "viewAllRewards": "Voir toutes les récompenses"
+  },
+  "leaderboard": {
+    "title": "Meilleurs contributeurs",
+    "subtitle": "Reconnaître les membres les plus actifs de notre communauté",
+    "reviews": "avis"
+  },
+  "footer": {
+    "tagline": "Évaluez n'importe quoi en Égypte. Une plateforme dirigée par la communauté pour découvrir, évaluer et noter le meilleur de l'Égypte.",
+    "explore": "Explorer",
+    "restaurants": "Restaurants",
+    "skincare": "Soins de la peau",
+    "cafes": "Cafés",
+    "gyms": "Salles de sport",
+    "beaches": "Plages",
+    "platform": "Plateforme",
+    "rewardsList": "Récompenses",
+    "leaderboardLink": "Classement",
+    "createAccount": "Créer un compte",
+    "signInLink": "Se connecter",
+    "connect": "Se connecter",
+    "copyright": "Tous droits réservés.",
+    "by": "par",
+    "themokCompany": "The Mok Company"
+  },
+  "item": {
+    "about": "À propos",
+    "ratingBreakdown": "Répartition des évaluations",
+    "reviews": "Avis",
+    "noReviewsYet": "Aucun avis pour le moment. Soyez le premier à partager votre expérience!",
+    "details": "Détails",
+    "priceRange": "Gamme de prix",
+    "category": "Catégorie",
+    "location": "Localisation",
+    "contact": "Contact",
+    "price": "Prix",
+    "getDirections": "Afficher sur Google Maps",
+    "verified": "Vérifié",
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {minutes}m",
+    "hoursAgo": "il y a {hours}h",
+    "daysAgo": "il y a {days}j",
+    "monthsAgo": "il y a {months}mo",
+    "yearsAgo": "il y a {years}a",
+    "pros": "Points positifs:",
+    "cons": "Points négatifs:",
+    "review": "avis",
+    "reviews": "avis"
+  },
+  "currency": {
+    "egp": "EGP",
+    "usd": "USD",
+    "eur": "EUR"
+  },
+  "time": {
+    "justNow": "à l'instant",
+    "minuteAgo": "il y a 1m",
+    "minutesAgo": "il y a {minutes}m",
+    "hourAgo": "il y a 1h",
+    "hoursAgo": "il y a {hours}h",
+    "dayAgo": "il y a 1j",
+    "daysAgo": "il y a {days}j",
+    "monthAgo": "il y a 1mo",
+    "monthsAgo": "il y a {months}mo",
+    "yearAgo": "il y a 1a",
+    "yearsAgo": "il y a {years}a"
+  },
+  "levels": {
+    "explorer": "Explorateur",
+    "contributor": "Contributeur",
+    "insider": "Initié",
+    "expert": "Expert",
+    "ambassador": "Ambassadeur",
+    "minLevel": "Niveau minimum: {level}"
+  },
+  "categoryFilter": {
+    "foodDining": "Gastronomie et restaurants",
+    "shopping": "Shopping",
+    "travel": "Voyage",
+    "wellness": "Bien-être"
   }
 }

@@ -1,36 +1,26 @@
 import { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { isValidLocale } from '@/i18n/config';
+import { locales } from '@/i18n/config';
 
 type Props = {
   children: ReactNode;
-  params: {
-    locale: string;
-  };
+  params: Promise<{ locale: string }>;
 };
 
 export function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'ar' }, { locale: 'fr' }];
+  return locales.map((locale) => ({ locale }));
 }
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: Props) {
-  if (!isValidLocale(locale)) {
-    throw new Error(`Unknown locale: ${locale}`);
-  }
-
-  const messages = await getMessages({ locale });
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = await params;
+  const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-      <body className="font-body bg-background text-text-primary antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <div dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+        {children}
+      </div>
+    </NextIntlClientProvider>
   );
 }

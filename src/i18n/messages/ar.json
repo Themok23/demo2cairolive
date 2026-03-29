@@ -1,10 +1,180 @@
 {
   "common": {
-    "home": "الرئيسية",
+    "appName": "ديمو٢ كايروليف",
+    "loading": "جاري التحميل...",
+    "or": "أو",
+    "all": "الكل",
+    "viewAll": "عرض الكل",
+    "back": "رجوع",
+    "writeReview": "اكتب تقييما",
+    "viewDetails": "عرض التفاصيل",
+    "viewFullLeaderboard": "عرض لائحة الشرف الكاملة",
+    "found": "وجدها مفيدة"
+  },
+  "nav": {
     "explore": "استكشف",
     "rewards": "المكافآت",
     "addItem": "إضافة عنصر",
-    "signIn": "تسجيل الدخول",
-    "addSomething": "أضف شيئًا"
+    "addSomething": "أضف شيئا",
+    "signIn": "تسجيل الدخول"
+  },
+  "hero": {
+    "title": "قيّم أي شيء في مصر.",
+    "subtitle": "اكتشف وقيّم أفضل المطاعم والمقاهي والشواطئ والصالات الرياضية ومنتجات العناية بالبشرة والطعام الشارعي والمزيد في جميع أنحاء مصر.",
+    "exploreNow": "استكشف الآن",
+    "addSomething": "أضف شيئا"
+  },
+  "categories": {
+    "title": "تصفح الفئات",
+    "subtitle": "استكشف مجموعات منسقة في جميع أنحاء مصر",
+    "items": "عناصر"
+  },
+  "categoryTitles": {
+    "restaurants": "طعم مصر",
+    "restaurantsDesc": "اكتشف أفضل المطاعم التي تقدم المأكولات الأصيلة والحديثة",
+    "cafes": "القهوة والأجواء",
+    "cafesDesc": "استكشف المقاهي المريحة المثالية للعمل والاجتماعات أو الاسترخاء",
+    "skincare": "الجمال والعناية بالبشرة",
+    "skincareDesc": "أفضل المنتجات الموثوقة للعناية بالبشرة والعلامات التجارية في مصر",
+    "beaches": "الشمس والبحر",
+    "beachesDesc": "استرخ في أجمل وجهات مصر الساحلية",
+    "gyms": "اللياقة البدنية والعافية",
+    "gymsDesc": "ابقَ نشيطا مع أفضل صالات الألعاب الرياضية ومراكز اللياقة في مصر",
+    "streetFood": "جواهر الطعام الشارعي",
+    "streetFoodDesc": "الطعام الشارعي الأصيل الذي يجعل ثقافة الطعام المصرية أسطورية"
+  },
+  "stats": {
+    "itemsRated": "العناصر المقيّمة",
+    "reviews": "التقييمات",
+    "categories": "الفئات"
+  },
+  "cta": {
+    "title": "وجدت شيئا يستحق التقييم؟",
+    "subtitle": "ساعد المجتمع على اكتشاف أفضل ما في مصر بإضافة وتقييم أماكنك المفضلة.",
+    "addItNow": "أضفه الآن"
+  },
+  "auth": {
+    "signInTitle": "تسجيل الدخول إلى حسابك",
+    "signUpTitle": "إنشاء حسابك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "fullName": "الاسم الكامل",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "continueWithGoogle": "متابعة مع جوجل",
+    "signUpWithGoogle": "التسجيل مع جوجل",
+    "signingIn": "جاري تسجيل الدخول...",
+    "creatingAccount": "جاري إنشاء الحساب...",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "هل لديك حساب بالفعل؟",
+    "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "registrationFailed": "فشل التسجيل",
+    "signInFailed": "فشل تسجيل الدخول بعد التسجيل",
+    "genericError": "حدث خطأ. يرجى المحاولة مجددا.",
+    "emailPlaceholder": "أنت@مثال.كوم",
+    "passwordPlaceholder": "كلمة مرورك",
+    "namePlaceholder": "اسمك",
+    "confirmPlaceholder": "أكد كلمة مرورك",
+    "atLeast8": "8 أحرف على الأقل"
+  },
+  "rewards": {
+    "title": "المكافآت والخصومات الحصرية",
+    "subtitle": "افتح صفقات رائعة من علاماتنا التجارية الشريكة بينما تبني سمعتك في المجتمع",
+    "pathToBeenefits": "طريقك إلى المزايا",
+    "completePath": "أكمل المزيد من التقييمات لفتح مستويات العضوية الأعلى والخصومات الأكبر",
+    "featuredOffers": "العروض المميزة",
+    "partnerDiscounts": "خصومات الشركاء المصممة لأعضاء المجتمع لدينا",
+    "noRewardsInCategory": "لا توجد مكافآت في هذه الفئة",
+    "startEarning": "ابدأ بكسب المكافآت اليوم",
+    "writeFirstReview": "اكتب تقييمك الأول والتحق بآلاف أعضاء المجتمع الذين يستمتعون بمزايا حصرية.",
+    "loading": "جاري تحميل المكافآت..."
+  },
+  "membership": {
+    "title": "رحلة العضوية",
+    "subtitle": "بناء سمعتك من خلال المساهمة في التقييمات وافتح خصومات حصرية في كل مستوى",
+    "reviewsRequired": "{count} تقييم مطلوب",
+    "discount": "خصم {percent}%",
+    "unlockPerks": "فتح المكافآت والمزايا الحصرية",
+    "viewAllRewards": "عرض جميع المكافآت"
+  },
+  "leaderboard": {
+    "title": "أفضل المساهمين",
+    "subtitle": "اعترف بأنشط أعضاء المجتمع لدينا",
+    "reviews": "تقييمات"
+  },
+  "footer": {
+    "tagline": "قيّم أي شيء في مصر. منصة يقودها المجتمع لاكتشاف وتقييم أفضل ما في مصر.",
+    "explore": "استكشف",
+    "restaurants": "المطاعم",
+    "skincare": "العناية بالبشرة",
+    "cafes": "المقاهي",
+    "gyms": "صالات الألعاب الرياضية",
+    "beaches": "الشواطئ",
+    "platform": "المنصة",
+    "rewardsList": "المكافآت",
+    "leaderboardLink": "لائحة الشرف",
+    "createAccount": "إنشاء حساب",
+    "signInLink": "تسجيل الدخول",
+    "connect": "تواصل",
+    "copyright": "جميع الحقوق محفوظة.",
+    "by": "بواسطة",
+    "themokCompany": "شركة موك"
+  },
+  "item": {
+    "about": "معلومات",
+    "ratingBreakdown": "توزيع التقييمات",
+    "reviews": "التقييمات",
+    "noReviewsYet": "لا توجد تقييمات حتى الآن. كن أول من يشارك تجربتك!",
+    "details": "التفاصيل",
+    "priceRange": "نطاق السعر",
+    "category": "الفئة",
+    "location": "الموقع",
+    "contact": "جهات الاتصال",
+    "price": "السعر",
+    "getDirections": "عرض على خرائط جوجل",
+    "verified": "موثوق",
+    "justNow": "للتو",
+    "minutesAgo": "منذ {minutes} دقيقة",
+    "hoursAgo": "منذ {hours} ساعة",
+    "daysAgo": "منذ {days} يوم",
+    "monthsAgo": "منذ {months} شهر",
+    "yearsAgo": "منذ {years} سنة",
+    "pros": "الإيجابيات:",
+    "cons": "السلبيات:",
+    "review": "تقييم",
+    "reviews": "تقييمات"
+  },
+  "currency": {
+    "egp": "جنيه مصري",
+    "usd": "دولار أمريكي",
+    "eur": "يورو"
+  },
+  "time": {
+    "justNow": "للتو",
+    "minuteAgo": "منذ دقيقة",
+    "minutesAgo": "منذ {minutes} دقيقة",
+    "hourAgo": "منذ ساعة",
+    "hoursAgo": "منذ {hours} ساعة",
+    "dayAgo": "منذ يوم",
+    "daysAgo": "منذ {days} يوم",
+    "monthAgo": "منذ شهر",
+    "monthsAgo": "منذ {months} شهر",
+    "yearAgo": "منذ سنة",
+    "yearsAgo": "منذ {years} سنة"
+  },
+  "levels": {
+    "explorer": "مستكشف",
+    "contributor": "مساهم",
+    "insider": "متمكن",
+    "expert": "خبير",
+    "ambassador": "سفير",
+    "minLevel": "الحد الأدنى للمستوى: {level}"
+  },
+  "categoryFilter": {
+    "foodDining": "الطعام والمطاعم",
+    "shopping": "التسوق",
+    "travel": "السفر",
+    "wellness": "العافية"
   }
 }

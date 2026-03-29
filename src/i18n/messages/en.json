@@ -1,10 +1,180 @@
 {
   "common": {
-    "home": "Home",
+    "appName": "demo2cairolive",
+    "loading": "Loading...",
+    "or": "or",
+    "all": "All",
+    "viewAll": "View All",
+    "back": "Back",
+    "writeReview": "Write a Review",
+    "viewDetails": "View Details",
+    "viewFullLeaderboard": "View Full Leaderboard",
+    "found": "found this helpful"
+  },
+  "nav": {
     "explore": "Explore",
     "rewards": "Rewards",
     "addItem": "Add Item",
-    "signIn": "Sign In",
+    "addSomething": "Add Something",
+    "signIn": "Sign In"
+  },
+  "hero": {
+    "title": "Rate anything in Egypt.",
+    "subtitle": "Discover, review, and rate the best restaurants, cafes, beaches, fitness, skincare, street food, and more across Egypt.",
+    "exploreNow": "Explore Now",
     "addSomething": "Add Something"
+  },
+  "categories": {
+    "title": "Browse Categories",
+    "subtitle": "Explore curated collections across all of Egypt",
+    "items": "items"
+  },
+  "categoryTitles": {
+    "restaurants": "Taste of Egypt",
+    "restaurantsDesc": "Discover the finest restaurants serving authentic and modern cuisine",
+    "cafes": "Coffee & Vibes",
+    "cafesDesc": "Explore cozy cafes perfect for work, meetings, or relaxation",
+    "skincare": "Beauty & Skincare",
+    "skincareDesc": "Top rated skincare and cosmetics brands in Egypt",
+    "beaches": "Sun & Sea",
+    "beachesDesc": "Relax at Egypt's most beautiful coastal destinations",
+    "gyms": "Fitness & Wellness",
+    "gymsDesc": "Stay active with the best gyms and fitness centers across Egypt",
+    "streetFood": "Street Food Gems",
+    "streetFoodDesc": "The authentic street food that makes Egypt's food culture legendary"
+  },
+  "stats": {
+    "itemsRated": "Items Rated",
+    "reviews": "Reviews",
+    "categories": "Categories"
+  },
+  "cta": {
+    "title": "Found something worth rating?",
+    "subtitle": "Help the community discover the best of Egypt by adding and reviewing your favorite places.",
+    "addItNow": "Add It Now"
+  },
+  "auth": {
+    "signInTitle": "Sign in to your account",
+    "signUpTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "confirmPassword": "Confirm Password",
+    "continueWithGoogle": "Continue with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "invalidCredentials": "Invalid email or password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "registrationFailed": "Registration failed",
+    "signInFailed": "Sign in failed after registration",
+    "genericError": "An error occurred. Please try again.",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Your password",
+    "namePlaceholder": "Your name",
+    "confirmPlaceholder": "Confirm your password",
+    "atLeast8": "At least 8 characters"
+  },
+  "rewards": {
+    "title": "Exclusive Rewards & Discounts",
+    "subtitle": "Unlock amazing deals from our partner brands as you build your reputation in the community",
+    "pathToBeenefits": "Your Path to Benefits",
+    "completePath": "Complete more reviews to unlock higher membership levels and greater discounts",
+    "featuredOffers": "Featured Offers",
+    "partnerDiscounts": "Partner discounts tailored for our community members",
+    "noRewardsInCategory": "No rewards available in this category",
+    "startEarning": "Start Earning Rewards Today",
+    "writeFirstReview": "Write your first review and join thousands of community members enjoying exclusive benefits.",
+    "loading": "Loading rewards..."
+  },
+  "membership": {
+    "title": "Membership Journey",
+    "subtitle": "Build your reputation by contributing reviews and unlock exclusive discounts at each level",
+    "reviewsRequired": "{count} reviews required",
+    "discount": "{percent}% Discount",
+    "unlockPerks": "Unlock exclusive rewards and perks",
+    "viewAllRewards": "View All Rewards"
+  },
+  "leaderboard": {
+    "title": "Top Contributors",
+    "subtitle": "Recognize our most active community members",
+    "reviews": "reviews"
+  },
+  "footer": {
+    "tagline": "Rate anything in Egypt. A community-driven platform to discover, review, and rate the best of Egypt.",
+    "explore": "Explore",
+    "restaurants": "Restaurants",
+    "skincare": "Skincare",
+    "cafes": "Cafes",
+    "gyms": "Gyms",
+    "beaches": "Beaches",
+    "platform": "Platform",
+    "rewardsList": "Rewards",
+    "leaderboardLink": "Leaderboard",
+    "createAccount": "Create Account",
+    "signInLink": "Sign In",
+    "connect": "Connect",
+    "copyright": "All rights reserved.",
+    "by": "by",
+    "themokCompany": "The Mok Company"
+  },
+  "item": {
+    "about": "About",
+    "ratingBreakdown": "Rating Breakdown",
+    "reviews": "Reviews",
+    "noReviewsYet": "No reviews yet. Be the first to share your experience!",
+    "details": "Details",
+    "priceRange": "Price Range",
+    "category": "Category",
+    "location": "Location",
+    "contact": "Contact",
+    "price": "Price",
+    "getDirections": "View on Google Maps",
+    "verified": "Verified",
+    "justNow": "just now",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago",
+    "monthsAgo": "{months}mo ago",
+    "yearsAgo": "{years}y ago",
+    "pros": "Pros:",
+    "cons": "Cons:",
+    "review": "review",
+    "reviews": "reviews"
+  },
+  "currency": {
+    "egp": "EGP",
+    "usd": "USD",
+    "eur": "EUR"
+  },
+  "time": {
+    "justNow": "just now",
+    "minuteAgo": "1m ago",
+    "minutesAgo": "{minutes}m ago",
+    "hourAgo": "1h ago",
+    "hoursAgo": "{hours}h ago",
+    "dayAgo": "1d ago",
+    "daysAgo": "{days}d ago",
+    "monthAgo": "1mo ago",
+    "monthsAgo": "{months}mo ago",
+    "yearAgo": "1y ago",
+    "yearsAgo": "{years}y ago"
+  },
+  "levels": {
+    "explorer": "Explorer",
+    "contributor": "Contributor",
+    "insider": "Insider",
+    "expert": "Expert",
+    "ambassador": "Ambassador",
+    "minLevel": "Min Level: {level}"
+  },
+  "categoryFilter": {
+    "foodDining": "Food & Dining",
+    "shopping": "Shopping",
+    "travel": "Travel",
+    "wellness": "Wellness"
   }
 }
