@@ -49,7 +49,9 @@ export async function GET(request: NextRequest) {
       total: categoriesData.length,
     });
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[GET /api/admin/categories] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
 
@@ -61,15 +63,23 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.name || !body.slug) {
-      return error('Missing required fields: name, slug', 400);
+    if (!body.name || typeof body.name !== 'string' || body.name.trim() === '') {
+      return error('Invalid name field. Must be a non-empty string', 400);
     }
+
+    if (!body.slug || typeof body.slug !== 'string' || body.slug.trim() === '') {
+      return error('Invalid slug field. Must be a non-empty string', 400);
+    }
+
+    // Sanitize and trim inputs
+    const sanitizedName = body.name.trim();
+    const sanitizedSlug = body.slug.trim().toLowerCase();
 
     // Check if slug already exists
     const existingCategory = await db
       .select()
       .from(categories)
-      .where(eq(categories.slug, body.slug))
+      .where(eq(categories.slug, sanitizedSlug))
       .limit(1);
 
     if (existingCategory.length > 0) {
@@ -80,11 +90,11 @@ export async function POST(request: NextRequest) {
     const result = await db
       .insert(categories)
       .values({
-        name: body.name,
-        slug: body.slug,
-        icon: body.icon,
-        color: body.color,
-        description: body.description,
+        name: sanitizedName,
+        slug: sanitizedSlug,
+        icon: body.icon ?? null,
+        color: body.color ?? null,
+        description: body.description ?? null,
       })
       .returning();
 
@@ -94,6 +104,8 @@ export async function POST(request: NextRequest) {
 
     return success(result[0], 201);
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[POST /api/admin/categories] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }

@@ -19,23 +19,33 @@ export class GetLeaderboard {
   async execute(limit: number = 10): Promise<LeaderboardEntryDTO[]> {
     const profiles = await this.userProfileRepo.getLeaderboard(limit);
 
-    const entries: LeaderboardEntryDTO[] = [];
+    if (profiles.length === 0) {
+      return [];
+    }
 
-    for (let i = 0; i < profiles.length; i++) {
-      const profile = profiles[i];
-      const user = await this.userRepo.findById(profile.userId);
+    // Collect all user IDs for batch query
+    const userIds = profiles.map((profile) => profile.userId);
 
-      if (user) {
-        entries.push({
+    // Fetch all users in a single query instead of one per profile
+    const users = await this.userRepo.findByIds(userIds);
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Map profiles to leaderboard entries
+    const entries = profiles
+      .map((profile, index) => {
+        const user = userMap.get(profile.userId);
+        if (!user) return null;
+
+        return {
           userId: profile.userId,
           name: user.name,
           avatarUrl: user.avatarUrl,
           level: profile.level,
           approvedReviewCount: profile.approvedReviewCount,
-          rank: i + 1,
-        });
-      }
-    }
+          rank: index + 1,
+        };
+      })
+      .filter(Boolean) as LeaderboardEntryDTO[];
 
     return entries;
   }

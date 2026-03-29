@@ -2,7 +2,10 @@ import Link from 'next/link';
 import StaggerText from '@/presentation/components/animations/StaggerText';
 import FadeUp from '@/presentation/components/animations/FadeUp';
 import CountUp from '@/presentation/components/animations/CountUp';
+import SectionReveal from '@/presentation/components/animations/SectionReveal';
+import FloatingElements from '@/presentation/components/animations/FloatingElements';
 import Button from '@/presentation/components/ui/Button';
+import CategoryIcon from '@/presentation/components/ui/CategoryIcon';
 import CategorySection from '@/presentation/components/home/CategorySection';
 import MembershipLevels from '@/presentation/components/home/MembershipLevels';
 import TopContributors from '@/presentation/components/home/TopContributors';
@@ -33,7 +36,20 @@ async function getStats() {
 
 async function getCategories() {
   try {
-    return await db.select().from(categories);
+    const result = await db
+      .select({
+        id: categories.id,
+        name: categories.name,
+        slug: categories.slug,
+        icon: categories.icon,
+        color: categories.color,
+        itemCount: sql<number>`count(${items.id})`,
+      })
+      .from(categories)
+      .leftJoin(items, eq(items.categoryId, categories.id))
+      .groupBy(categories.id);
+
+    return result;
   } catch {
     return [];
   }
@@ -111,33 +127,34 @@ export default async function HomePage() {
     <div className="overflow-hidden">
       {/* Hero Section */}
       <section
-        className="relative overflow-hidden py-20 sm:py-32 md:py-40"
+        className="relative overflow-hidden py-24 sm:py-36 md:py-44"
         style={{
           backgroundImage: 'url(https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=1500&h=600&fit=crop)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+        <FloatingElements variant="dark" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <StaggerText
             text="Rate anything in Egypt."
-            className="font-display text-4xl sm:text-6xl lg:text-7xl text-white leading-tight drop-shadow-lg"
+            className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight drop-shadow-lg"
           />
           <FadeUp delay={0.5}>
-            <p className="mt-6 text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-body drop-shadow-md">
+            <p className="mt-6 text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-body leading-relaxed drop-shadow-md">
               Discover, review, and rate the best restaurants, cafes, beaches, fitness, skincare, street food, and more across Egypt.
             </p>
           </FadeUp>
           <FadeUp delay={0.7}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/explore">
-                <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02]">
+                <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-primary/25">
                   Explore Now
                 </button>
               </Link>
               <Link href="/submit">
-                <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200">
+                <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg border-2 border-white/80 text-white hover:bg-white/15 transition-all duration-200 backdrop-blur-sm">
                   Add Something
                 </button>
               </Link>
@@ -147,16 +164,17 @@ export default async function HomePage() {
       </section>
 
       {/* Category Grid */}
-      <section className="py-16 sm:py-24 bg-background">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <FadeUp>
+      <section className="relative py-16 sm:py-24 bg-background">
+        <FloatingElements variant="light" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionReveal>
             <div className="text-center mb-12">
-              <h2 className="font-display text-3xl sm:text-4xl text-secondary mb-3">Browse Categories</h2>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-secondary mb-3 tracking-tight">Browse Categories</h2>
               <p className="text-text-muted max-w-2xl mx-auto">
                 Explore curated collections across all of Egypt
               </p>
             </div>
-          </FadeUp>
+          </SectionReveal>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {allCategories.map((cat: any, i: number) => (
               <FadeUp key={cat.slug} delay={i * 0.05}>
@@ -165,7 +183,7 @@ export default async function HomePage() {
                   className="group flex flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover"
                 >
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                    <span className="text-2xl">{cat.icon ?? '📍'}</span>
+                    <CategoryIcon name={cat.icon ?? 'MapPin'} size={28} />
                   </div>
                   <span className="text-sm font-semibold text-center text-secondary leading-tight">{cat.name}</span>
                   <span className="text-xs text-text-muted">{cat.itemCount ?? 0} items</span>
@@ -184,32 +202,38 @@ export default async function HomePage() {
         if (!categoryItems || categoryItems.length === 0) return null;
 
         return (
-          <CategorySection
-            key={slug}
-            title={categoryConfig.title}
-            description={categoryConfig.description}
-            items={categoryItems}
-            categorySlug={slug}
-            variant={categoryConfig.variant}
-          />
+          <SectionReveal key={slug}>
+            <CategorySection
+              title={categoryConfig.title}
+              description={categoryConfig.description}
+              items={categoryItems}
+              categorySlug={slug}
+              variant={categoryConfig.variant}
+            />
+          </SectionReveal>
         );
       })}
 
       {/* Membership Levels Section */}
-      <MembershipLevels />
+      <SectionReveal>
+        <MembershipLevels />
+      </SectionReveal>
 
       {/* Top Contributors Section */}
-      <TopContributors />
+      <SectionReveal>
+        <TopContributors />
+      </SectionReveal>
 
       {/* Stats Section */}
-      <section className="py-16 sm:py-24 bg-secondary">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 sm:py-24 bg-secondary overflow-hidden">
+        <FloatingElements variant="dark" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 text-center">
             <FadeUp>
               <div className="p-6">
                 <CountUp
                   end={stats.items}
-                  className="block font-display text-5xl sm:text-6xl text-primary drop-shadow-lg"
+                  className="block font-display text-5xl sm:text-6xl font-bold text-primary drop-shadow-lg"
                 />
                 <span className="mt-3 block text-white/80 font-body text-lg">Items Rated</span>
               </div>
@@ -218,7 +242,7 @@ export default async function HomePage() {
               <div className="p-6">
                 <CountUp
                   end={stats.reviews}
-                  className="block font-display text-5xl sm:text-6xl text-accent-gold drop-shadow-lg"
+                  className="block font-display text-5xl sm:text-6xl font-bold text-accent-gold drop-shadow-lg"
                 />
                 <span className="mt-3 block text-white/80 font-body text-lg">Reviews</span>
               </div>
@@ -227,7 +251,7 @@ export default async function HomePage() {
               <div className="p-6">
                 <CountUp
                   end={stats.categories}
-                  className="block font-display text-5xl sm:text-6xl text-accent-green drop-shadow-lg"
+                  className="block font-display text-5xl sm:text-6xl font-bold text-accent-green drop-shadow-lg"
                 />
                 <span className="mt-3 block text-white/80 font-body text-lg">Categories</span>
               </div>
@@ -237,17 +261,18 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24 bg-primary">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-16 sm:py-24 bg-primary overflow-hidden">
+        <FloatingElements variant="dark" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <FadeUp>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-white mb-4">
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
               Found something worth rating?
             </h2>
             <p className="text-white/90 font-body text-lg max-w-2xl mx-auto mb-8">
               Help the community discover the best of Egypt by adding and reviewing your favorite places.
             </p>
             <Link href="/submit">
-              <button className="inline-flex items-center justify-center font-body font-semibold rounded-lg px-8 py-3.5 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200">
+              <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200 backdrop-blur-sm">
                 Add It Now
               </button>
             </Link>

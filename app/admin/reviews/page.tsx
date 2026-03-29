@@ -25,9 +25,12 @@ interface Review {
   cons?: string;
   status: 'pending' | 'approved' | 'rejected';
   adminNote?: string;
+  helpfulCount?: number;
   createdAt: string;
-  item?: { name: string };
-  user?: { name: string; avatarUrl?: string };
+  updatedAt?: string;
+  itemName?: string;
+  userName?: string;
+  userEmail?: string;
 }
 
 type StatusFilter = '' | 'pending' | 'approved' | 'rejected';
@@ -52,7 +55,7 @@ export default function ReviewsModeration() {
         const res = await fetch('/api/admin/reviews');
         if (!res.ok) throw new Error('Failed to fetch reviews');
         const data = await res.json();
-        setReviews(data.data || []);
+        setReviews(data.data?.reviews || []);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -102,7 +105,11 @@ export default function ReviewsModeration() {
 
   const handleApproveReview = async (reviewId: number) => {
     try {
-      const res = await fetch(`/api/admin/reviews/${reviewId}/approve`, { method: 'POST' });
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'approved' }),
+      });
       if (!res.ok) throw new Error('Failed to approve');
       setReviews((prev) =>
         prev.map((r) => (r.id === reviewId ? { ...r, status: 'approved' } : r))
@@ -114,7 +121,11 @@ export default function ReviewsModeration() {
 
   const handleRejectReview = async (reviewId: number) => {
     try {
-      const res = await fetch(`/api/admin/reviews/${reviewId}/reject`, { method: 'POST' });
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected' }),
+      });
       if (!res.ok) throw new Error('Failed to reject');
       setReviews((prev) =>
         prev.map((r) => (r.id === reviewId ? { ...r, status: 'rejected' } : r))
@@ -242,11 +253,47 @@ export default function ReviewsModeration() {
               {selectedReviews.length} review{selectedReviews.length !== 1 ? 's' : ''} selected
             </span>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 px-3 py-1 bg-[#4CAF88] text-white rounded hover:bg-[#4CAF88]/90 text-sm transition-colors">
+              <button
+                onClick={async () => {
+                  const promises = selectedReviews.map((id) =>
+                    fetch(`/api/admin/reviews/${id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ status: 'approved' }),
+                    })
+                  );
+                  await Promise.all(promises);
+                  setReviews((prev) =>
+                    prev.map((r) =>
+                      selectedReviews.includes(r.id) ? { ...r, status: 'approved' } : r
+                    )
+                  );
+                  setSelectedReviews([]);
+                }}
+                className="flex items-center gap-2 px-3 py-1 bg-[#4CAF88] text-white rounded hover:bg-[#4CAF88]/90 text-sm transition-colors"
+              >
                 <Check className="w-4 h-4" />
                 Approve All
               </button>
-              <button className="flex items-center gap-2 px-3 py-1 bg-[#EF4444] text-white rounded hover:bg-[#EF4444]/90 text-sm transition-colors">
+              <button
+                onClick={async () => {
+                  const promises = selectedReviews.map((id) =>
+                    fetch(`/api/admin/reviews/${id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ status: 'rejected' }),
+                    })
+                  );
+                  await Promise.all(promises);
+                  setReviews((prev) =>
+                    prev.map((r) =>
+                      selectedReviews.includes(r.id) ? { ...r, status: 'rejected' } : r
+                    )
+                  );
+                  setSelectedReviews([]);
+                }}
+                className="flex items-center gap-2 px-3 py-1 bg-[#EF4444] text-white rounded hover:bg-[#EF4444]/90 text-sm transition-colors"
+              >
                 <X className="w-4 h-4" />
                 Reject All
               </button>
@@ -256,6 +303,15 @@ export default function ReviewsModeration() {
       )}
 
       {/* Reviews Cards */}
+      {filteredReviews.length === 0 ? (
+        <DashboardCard>
+          <div className="text-center py-12">
+            <Star className="w-12 h-12 text-white/20 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">No Reviews Yet</h3>
+            <p className="text-white/60">Reviews will appear here once users start rating items.</p>
+          </div>
+        </DashboardCard>
+      ) : (
       <div className="space-y-4">
         {paginatedReviews.map((review) => (
           <DashboardCard key={review.id} interactive>
@@ -270,16 +326,10 @@ export default function ReviewsModeration() {
                     className="w-4 h-4 rounded border-white/20 bg-[#13132B] mt-1"
                   />
                   <div className="flex-1">
-                    {review.user?.avatarUrl ? (
-                      <img
-                        src={review.user.avatarUrl}
-                        alt={review.user.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-white/10" />
-                    )}
-                    <p className="text-sm font-medium text-white mt-2">{review.user?.name || 'Anonymous'}</p>
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                      <span className="text-white/60 text-sm font-medium">{(review.userName || 'A').charAt(0).toUpperCase()}</span>
+                    </div>
+                    <p className="text-sm font-medium text-white mt-2">{review.userName || 'Anonymous'}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -315,7 +365,7 @@ export default function ReviewsModeration() {
               <div className="flex items-center justify-between text-sm">
                 <div>
                   <p className="text-white/60">
-                    Review of <span className="text-white font-medium">{review.item?.name || 'Unknown'}</span>
+                    Review of <span className="text-white font-medium">{review.itemName || 'Unknown'}</span>
                   </p>
                   <p className="text-white/40 text-xs mt-1">
                     {new Date(review.createdAt).toLocaleString()}
@@ -357,6 +407,7 @@ export default function ReviewsModeration() {
                   <button
                     onClick={() => handleApproveReview(review.id)}
                     className="flex items-center gap-2 flex-1 px-4 py-2 bg-[#4CAF88] text-white rounded-lg hover:bg-[#4CAF88]/90 transition-colors"
+                    aria-label={`Approve review from ${review.userName || 'Unknown'}`}
                   >
                     <Check className="w-4 h-4" />
                     Approve
@@ -364,11 +415,16 @@ export default function ReviewsModeration() {
                   <button
                     onClick={() => handleRejectReview(review.id)}
                     className="flex items-center gap-2 flex-1 px-4 py-2 bg-[#EF4444] text-white rounded-lg hover:bg-[#EF4444]/90 transition-colors"
+                    aria-label={`Reject review from ${review.userName || 'Unknown'}`}
                   >
                     <X className="w-4 h-4" />
                     Reject
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors">
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors"
+                    aria-label={`Delete review from ${review.userName || 'Unknown'}`}
+                    title="Delete review"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -377,6 +433,7 @@ export default function ReviewsModeration() {
           </DashboardCard>
         ))}
       </div>
+      )}
 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-4">
@@ -389,6 +446,8 @@ export default function ReviewsModeration() {
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
             className="p-1 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Previous page"
+            title="Previous page"
           >
             <ChevronLeft className="w-5 h-5 text-white/60" />
           </button>
@@ -399,6 +458,8 @@ export default function ReviewsModeration() {
             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages || totalPages === 0}
             className="p-1 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Next page"
+            title="Next page"
           >
             <ChevronRight className="w-5 h-5 text-white/60" />
           </button>

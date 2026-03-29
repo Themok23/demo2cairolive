@@ -181,7 +181,7 @@ export default function AdminOverview() {
   const averageRating =
     stats.topRatedItems.length > 0
       ? (
-          stats.topRatedItems.reduce((sum, item) => sum + item.avgRating, 0) /
+          stats.topRatedItems.reduce((sum, item) => sum + parseFloat(String(item.avgRating)), 0) /
           stats.topRatedItems.length
         ).toFixed(2)
       : '0.00';
@@ -351,7 +351,7 @@ export default function AdminOverview() {
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-[#4CAF88]" />
                   <span className="text-sm font-semibold text-white min-w-fit">
-                    {item.avgRating.toFixed(1)}
+                    {parseFloat(String(item.avgRating)).toFixed(1)}
                   </span>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export default function AdminOverview() {
                   <p className="text-sm font-medium text-white">{category.name}</p>
                   <p className="text-xs text-white/40">{category.itemCount} items</p>
                 </div>
-                <Badge variant="info">{category.avgRating.toFixed(1)}</Badge>
+                <Badge variant="info">{parseFloat(String(category.avgRating)).toFixed(1)}</Badge>
               </div>
             ))}
           </div>

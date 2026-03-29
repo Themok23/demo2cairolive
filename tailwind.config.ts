@@ -20,8 +20,8 @@ const config: Config = {
         'text-muted': '#6B6B7B',
       },
       fontFamily: {
-        display: ['DM Serif Display', 'serif'],
-        body: ['Plus Jakarta Sans', 'sans-serif'],
+        display: ['Sora', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
       },
       borderRadius: {
         card: '16px',

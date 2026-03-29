@@ -14,11 +14,9 @@ export class SubmitReview {
   async execute(dto: SubmitReviewDTO, userId: number): Promise<ReviewDTO> {
     const validated = SubmitReviewSchema.parse(dto);
 
-    const item = await this.itemRepo.findBySlug(String(validated.itemId));
+    const item = await this.itemRepo.findById(validated.itemId);
     if (!item) {
-      // Try by ID directly
-      const items = await this.itemRepo.findAll({ limit: 1 });
-      // We validate the item exists
+      throw new Error(`Item with ID ${validated.itemId} not found`);
     }
 
     const autoApproveSetting = await this.settingsRepo.get('auto_approve_reviews');

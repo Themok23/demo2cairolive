@@ -30,9 +30,15 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
   }, []);
 
   const handleLogout = () => {
-    // TODO: Implement logout logic
-    console.log('Logout clicked');
-    setIsProfileOpen(false);
+    try {
+      // Delete the admin auth cookie
+      document.cookie = 'cairo-admin-auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+      // Redirect to password gate
+      window.location.href = '/admin';
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
   };
 
   return (

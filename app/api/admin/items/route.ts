@@ -23,10 +23,21 @@ export async function GET(request: NextRequest) {
     await requireDashboardAuth();
     const db = getDatabase();
 
-    // Parse query parameters
+    // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams;
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.min(100, parseInt(searchParams.get('limit') || '25'));
+    const pageParam = parseInt(searchParams.get('page') || '1');
+    const limitParam = parseInt(searchParams.get('limit') || '20');
+
+    // Validate and sanitize pagination parameters
+    if (isNaN(pageParam) || pageParam < 1) {
+      return error('Invalid page parameter. Must be a positive integer', 400);
+    }
+    if (isNaN(limitParam) || limitParam < 1 || limitParam > 100) {
+      return error('Invalid limit parameter. Must be between 1 and 100', 400);
+    }
+
+    const page = pageParam;
+    const limit = limitParam;
     const sort = searchParams.get('sort') || 'createdAt';
     const order = searchParams.get('order') || 'desc';
     const search = searchParams.get('search') || '';
@@ -106,7 +117,9 @@ export async function GET(request: NextRequest) {
       totalPages,
     });
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[GET /api/admin/items] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
 
@@ -172,7 +185,9 @@ export async function POST(request: NextRequest) {
 
     return success(result[0], 201);
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[POST /api/admin/items] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
 
@@ -232,6 +247,8 @@ export async function PATCH(request: NextRequest) {
 
     return success({ message: `Successfully ${action}d ${body.ids.length} items` });
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[PATCH /api/admin/items] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }

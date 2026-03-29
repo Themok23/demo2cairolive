@@ -56,6 +56,16 @@ export class DrizzleItemRepository implements IItemRepository {
     return result as unknown as readonly Item[];
   }
 
+  async findById(id: number): Promise<Item | null> {
+    const result = await db
+      .select()
+      .from(items)
+      .where(eq(items.id, id))
+      .limit(1);
+
+    return (result[0] as unknown as Item) ?? null;
+  }
+
   async findBySlug(slug: string): Promise<Item | null> {
     const result = await db
       .select()
@@ -93,13 +103,14 @@ export class DrizzleItemRepository implements IItemRepository {
   }
 
   async search(query: string, limit: number = 20): Promise<readonly Item[]> {
+    const searchPattern = `%${query}%`;
     const result = await db
       .select()
       .from(items)
       .where(
         and(
           eq(items.isActive, true),
-          sql`(${items.name} ILIKE ${'%' + query + '%'} OR ${items.description} ILIKE ${'%' + query + '%'} OR ${items.governorate} ILIKE ${'%' + query + '%'} OR ${items.area} ILIKE ${'%' + query + '%'})`
+          sql`(${items.name} ILIKE ${searchPattern} OR ${items.description} ILIKE ${searchPattern} OR ${items.governorate} ILIKE ${searchPattern} OR ${items.area} ILIKE ${searchPattern})`
         )
       )
       .orderBy(desc(items.avgRating))

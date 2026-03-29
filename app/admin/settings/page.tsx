@@ -102,6 +102,8 @@ export default function SettingsPage() {
       a.href = url;
       a.download = `${type}-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
+      // Revoke the object URL to free up memory
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
     }

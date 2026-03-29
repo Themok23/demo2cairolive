@@ -44,7 +44,7 @@ export default function CategorySection({
   // === VARIANT 1: FEATURED HERO LAYOUT (Restaurants) ===
   if (variant === 'featured') {
     const featured = items[0];
-    const remaining = items.slice(1, 5);
+    const remaining = items.slice(1, 3);
 
     return (
       <section className="py-16 sm:py-24 bg-secondary text-white">
@@ -151,7 +151,7 @@ export default function CategorySection({
   // === VARIANT 2: MASONRY GRID (Cafes) ===
   if (variant === 'masonry') {
     return (
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-amber-50/50 to-background text-secondary">
+      <section className="py-16 sm:py-24 bg-white text-secondary">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <FadeUp>
@@ -292,7 +292,7 @@ export default function CategorySection({
     const floating = items.slice(1, 5);
 
     return (
-      <section className="py-16 sm:py-24 bg-background text-secondary">
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-white text-secondary">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <FadeUp>
@@ -478,7 +478,7 @@ export default function CategorySection({
                     href={`/items/${item.slug}`}
                     className="group flex-shrink-0 flex flex-col items-center gap-3 transition-all duration-300"
                   >
-                    <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-card-hover ring-4 ring-transparent group-hover:ring-primary/30">
+                    <div className="relative w-44 h-44 rounded-2xl overflow-hidden shadow-card transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-card-hover ring-4 ring-transparent group-hover:ring-primary/30">
                       {item.imageUrl ? (
                         <img
                           src={item.imageUrl}
@@ -491,7 +491,7 @@ export default function CategorySection({
                         </div>
                       )}
                     </div>
-                    <div className="w-32 text-center">
+                    <div className="w-44 text-center">
                       <h3 className="font-display text-sm text-secondary line-clamp-2">{item.name}</h3>
                       <div className="mt-2 flex items-center justify-center gap-1">
                         <Star size={12} className="fill-accent-gold text-accent-gold" />

@@ -17,15 +17,34 @@ import {
   inArray,
 } from 'drizzle-orm';
 
+// Whitelist of allowed sort columns to prevent arbitrary column access
+const ALLOWED_SORT_COLUMNS = ['createdAt', 'rating', 'status', 'updatedAt', 'helpfulCount'] as const;
+type AllowedSortColumn = typeof ALLOWED_SORT_COLUMNS[number];
+
+function isAllowedSortColumn(column: string): column is AllowedSortColumn {
+  return ALLOWED_SORT_COLUMNS.includes(column as AllowedSortColumn);
+}
+
 export async function GET(request: NextRequest) {
   try {
     await requireDashboardAuth();
     const db = getDatabase();
 
-    // Parse query parameters
+    // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams;
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const limit = Math.min(100, parseInt(searchParams.get('limit') || '25'));
+    const pageParam = parseInt(searchParams.get('page') || '1');
+    const limitParam = parseInt(searchParams.get('limit') || '20');
+
+    // Validate and sanitize pagination parameters
+    if (isNaN(pageParam) || pageParam < 1) {
+      return error('Invalid page parameter. Must be a positive integer', 400);
+    }
+    if (isNaN(limitParam) || limitParam < 1 || limitParam > 100) {
+      return error('Invalid limit parameter. Must be between 1 and 100', 400);
+    }
+
+    const page = pageParam;
+    const limit = limitParam;
     const sort = searchParams.get('sort') || 'createdAt';
     const order = searchParams.get('order') || 'desc';
     const statusFilter = searchParams.get('status') || '';
@@ -41,8 +60,9 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
+      const searchPattern = `%${search}%`;
       conditions.push(
-        sql`(${reviews.title} ILIKE ${`%${search}%`} OR ${reviews.body} ILIKE ${`%${search}%`})`
+        sql`(${reviews.title} ILIKE ${searchPattern} OR ${reviews.body} ILIKE ${searchPattern})`
       );
     }
 
@@ -63,9 +83,10 @@ export async function GET(request: NextRequest) {
     const total = Number(countResult[0]?.count ?? 0);
     const totalPages = Math.ceil(total / limit);
 
-    // Get sort column and direction
+    // Get sort column and direction - validate sort column against whitelist
     let orderByClause: any;
-    const sortColumn = (reviews as any)[sort as keyof typeof reviews] || reviews.createdAt;
+    const validSort = isAllowedSortColumn(sort) ? sort : 'createdAt';
+    const sortColumn = (reviews as any)[validSort as keyof typeof reviews];
     orderByClause = order === 'desc' ? desc(sortColumn) : asc(sortColumn);
 
     // Get paginated reviews with item and user details
@@ -106,7 +127,9 @@ export async function GET(request: NextRequest) {
       totalPages,
     });
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[GET /api/admin/reviews] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
 
@@ -143,6 +166,8 @@ export async function PATCH(request: NextRequest) {
 
     return success({ message: `Successfully ${action}ed ${body.ids.length} reviews` });
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[PATCH /api/admin/reviews] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
