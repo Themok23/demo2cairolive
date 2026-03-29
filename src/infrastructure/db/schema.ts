@@ -26,10 +26,14 @@ export const users = pgTable('users', {
 export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
+  nameAr: varchar('name_ar', { length: 100 }),
+  nameFr: varchar('name_fr', { length: 100 }),
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   icon: varchar('icon', { length: 50 }),
   color: varchar('color', { length: 20 }),
   description: text('description'),
+  descriptionAr: text('description_ar'),
+  descriptionFr: text('description_fr'),
   itemCount: integer('item_count').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -39,9 +43,11 @@ export const items = pgTable('items', {
   slug: varchar('slug', { length: 200 }).notNull().unique(),
   name: varchar('name', { length: 200 }).notNull(),
   nameAr: varchar('name_ar', { length: 200 }),
+  nameFr: varchar('name_fr', { length: 200 }),
   categoryId: integer('category_id').references(() => categories.id),
   description: text('description').notNull(),
   descriptionAr: text('description_ar'),
+  descriptionFr: text('description_fr'),
   imageUrl: varchar('image_url', { length: 500 }),
   imageAlt: varchar('image_alt', { length: 200 }),
   governorate: varchar('governorate', { length: 100 }),
@@ -111,6 +117,7 @@ export const membershipLevels = pgTable('membership_levels', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),
   nameAr: varchar('name_ar', { length: 100 }),
+  nameFr: varchar('name_fr', { length: 100 }),
   slug: varchar('slug', { length: 50 }).notNull().unique(),
   minReviews: integer('min_reviews').notNull(),
   icon: varchar('icon', { length: 50 }),
@@ -124,8 +131,10 @@ export const rewards = pgTable('rewards', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 200 }).notNull(),
   titleAr: varchar('title_ar', { length: 200 }),
+  titleFr: varchar('title_fr', { length: 200 }),
   description: text('description').notNull(),
   descriptionAr: text('description_ar'),
+  descriptionFr: text('description_fr'),
   imageUrl: varchar('image_url', { length: 500 }),
   partnerName: varchar('partner_name', { length: 150 }).notNull(),
   partnerLogo: varchar('partner_logo', { length: 500 }),
@@ -144,4 +153,12 @@ export const rewardClaims = pgTable('reward_claims', {
   userId: integer('user_id').references(() => users.id).notNull(),
   rewardId: integer('reward_id').references(() => rewards.id).notNull(),
   claimedAt: timestamp('claimed_at').defaultNow(),
+});
+
+export const exchangeRates = pgTable('exchange_rates', {
+  id: serial('id').primaryKey(),
+  fromCurrency: varchar('from_currency', { length: 5 }).notNull(),
+  toCurrency: varchar('to_currency', { length: 5 }).notNull(),
+  rate: decimal('rate', { precision: 10, scale: 4 }).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });

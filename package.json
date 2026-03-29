@@ -12,6 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/infrastructure/seeds/items.seed.ts",
+    "db:migrate:i18n": "tsx scripts/apply-i18n-migration.ts",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
@@ -25,6 +26,7 @@
     "lucide-react": "^0.469.0",
     "next": "14.2.21",
     "next-auth": "^5.0.0-beta.25",
+    "next-intl": "^4.8.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^3.8.1",
