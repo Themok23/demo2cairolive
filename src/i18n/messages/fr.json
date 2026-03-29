@@ -1,0 +1,10 @@
+{
+  "common": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "rewards": "Récompenses",
+    "addItem": "Ajouter un élément",
+    "signIn": "Se connecter",
+    "addSomething": "Ajouter quelque chose"
+  }
+}

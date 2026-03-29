@@ -1,3 +1,10 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin(
+  // This is the default (can be omitted)
+  './src/i18n/request.ts'
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -36,4 +43,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

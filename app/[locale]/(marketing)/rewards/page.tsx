@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { Lock, Check } from 'lucide-react';
 import StaggerText from '@/presentation/components/animations/StaggerText';

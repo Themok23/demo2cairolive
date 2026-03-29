@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
+export const dynamic = 'force-dynamic';
 import StaggerText from '@/presentation/components/animations/StaggerText';
 import FadeUp from '@/presentation/components/animations/FadeUp';
 

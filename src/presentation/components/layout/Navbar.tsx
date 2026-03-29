@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Menu, X, Search, Plus } from 'lucide-react';
 import Button from '../ui/Button';
+
+const LanguageSwitcher = dynamic(() => import('../ui/LanguageSwitcher'), { ssr: false });
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +47,7 @@ export default function Navbar() {
                 Add Something
               </Button>
             </Link>
+            <LanguageSwitcher />
             <Link href="/auth/signin">
               <Button variant="outline" size="sm">Sign In</Button>
             </Link>
