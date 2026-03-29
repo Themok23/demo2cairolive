@@ -12,6 +12,7 @@ export interface ItemFilters {
 
 export interface IItemRepository {
   findAll(filters: ItemFilters): Promise<readonly Item[]>;
+  findById(id: number): Promise<Item | null>;
   findBySlug(slug: string): Promise<Item | null>;
   findFeatured(limit?: number): Promise<readonly Item[]>;
   create(item: Omit<Item, 'id' | 'createdAt' | 'updatedAt'>): Promise<Item>;

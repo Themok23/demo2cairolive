@@ -47,6 +47,11 @@ export default function UsersManagement() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'user' | 'moderator' | 'admin'>('user');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteMessage, setInviteMessage] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [roleChangeLoading, setRoleChangeLoading] = useState(false);
 
   const usersPerPage = 10;
 
@@ -56,7 +61,7 @@ export default function UsersManagement() {
         const res = await fetch('/api/admin/users');
         if (!res.ok) throw new Error('Failed to fetch users');
         const data = await res.json();
-        setUsers(data.data || []);
+        setUsers(data.data?.users || []);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -413,8 +418,36 @@ export default function UsersManagement() {
             >
               Close
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
-              Change Role
+            <button
+              onClick={async () => {
+                if (!selectedUser) return;
+                setRoleChangeLoading(true);
+                try {
+                  const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role: selectedRole }),
+                  });
+
+                  if (!res.ok) throw new Error('Failed to update role');
+
+                  setUsers((prev) =>
+                    prev.map((u) => (u.id === selectedUser.id ? { ...u, role: selectedRole } : u))
+                  );
+
+                  setShowUserModal(false);
+                  setSelectedUser(null);
+                } catch (err) {
+                  console.error(err);
+                  alert('Failed to change role');
+                } finally {
+                  setRoleChangeLoading(false);
+                }
+              }}
+              disabled={roleChangeLoading}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors disabled:opacity-50"
+            >
+              {roleChangeLoading ? 'Updating...' : 'Change Role'}
             </button>
           </>
         }
@@ -439,7 +472,7 @@ export default function UsersManagement() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-white/60 mb-2">Role</p>
+                <p className="text-xs text-white/60 mb-2">Current Role</p>
                 <Badge variant={getRoleBadgeVariant(selectedUser.role)}>
                   {selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}
                 </Badge>
@@ -461,6 +494,19 @@ export default function UsersManagement() {
             </div>
 
             <div className="border-t border-white/5 pt-6">
+              <label className="block text-sm font-semibold text-white mb-3">Change Role</label>
+              <select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value as 'user' | 'moderator' | 'admin')}
+                className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8572A] transition-colors"
+              >
+                <option value="user">User</option>
+                <option value="moderator">Moderator</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <div className="border-t border-white/5 pt-6">
               <h4 className="text-sm font-semibold text-white mb-4">Recent Reviews</h4>
               <div className="space-y-3">
                 <div className="p-3 bg-[#13132B] rounded border border-white/5">
@@ -475,19 +521,65 @@ export default function UsersManagement() {
       {/* Invite User Modal */}
       <Modal
         isOpen={showInviteModal}
-        onClose={() => setShowInviteModal(false)}
+        onClose={() => {
+          setShowInviteModal(false);
+          setInviteEmail('');
+          setInviteMessage('');
+          setSelectedRole('user');
+        }}
         title="Invite New User"
         size="md"
         footer={
           <>
             <button
-              onClick={() => setShowInviteModal(false)}
-              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors"
+              onClick={() => {
+                setShowInviteModal(false);
+                setInviteEmail('');
+                setInviteMessage('');
+                setSelectedRole('user');
+              }}
+              disabled={inviteLoading}
+              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
-              Send Invite
+            <button
+              onClick={async () => {
+                if (!inviteEmail.trim()) {
+                  alert('Email is required');
+                  return;
+                }
+
+                setInviteLoading(true);
+                try {
+                  const res = await fetch('/api/admin/users/invite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      email: inviteEmail,
+                      role: selectedRole,
+                      message: inviteMessage,
+                    }),
+                  });
+
+                  if (!res.ok) throw new Error('Failed to send invite');
+
+                  alert('Invite sent successfully');
+                  setShowInviteModal(false);
+                  setInviteEmail('');
+                  setInviteMessage('');
+                  setSelectedRole('user');
+                } catch (err) {
+                  console.error(err);
+                  alert('Failed to send invite');
+                } finally {
+                  setInviteLoading(false);
+                }
+              }}
+              disabled={inviteLoading}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors disabled:opacity-50"
+            >
+              {inviteLoading ? 'Sending...' : 'Send Invite'}
             </button>
           </>
         }
@@ -497,6 +589,8 @@ export default function UsersManagement() {
             <label className="block text-sm font-medium text-white mb-2">Email Address</label>
             <input
               type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="user@example.com"
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-[#E8572A] transition-colors"
             />
@@ -504,7 +598,11 @@ export default function UsersManagement() {
 
           <div>
             <label className="block text-sm font-medium text-white mb-2">Role</label>
-            <select className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8572A] transition-colors">
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value as 'user' | 'moderator' | 'admin')}
+              className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8572A] transition-colors"
+            >
               <option value="user">User</option>
               <option value="moderator">Moderator</option>
               <option value="admin">Admin</option>
@@ -514,6 +612,8 @@ export default function UsersManagement() {
           <div>
             <label className="block text-sm font-medium text-white mb-2">Message</label>
             <textarea
+              value={inviteMessage}
+              onChange={(e) => setInviteMessage(e.target.value)}
               placeholder="Optional message to include in the invite..."
               rows={4}
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-[#E8572A] transition-colors resize-none"

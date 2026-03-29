@@ -81,6 +81,9 @@ export default function GamificationManagement() {
     expiresAt: '',
   });
 
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formLoading, setFormLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -269,7 +272,19 @@ export default function GamificationManagement() {
                     >
                       <Edit2 className="w-4 h-4 text-white/60" />
                     </button>
-                    <button className="flex-1 flex items-center justify-center gap-2 p-2 hover:bg-white/10 rounded transition-colors">
+                    <button
+                      onClick={async () => {
+                        if (!confirm('Are you sure you want to delete this level?')) return;
+                        try {
+                          const res = await fetch(`/api/admin/gamification/levels/${level.id}`, { method: 'DELETE' });
+                          if (!res.ok) throw new Error('Failed to delete');
+                          setLevels((prev) => prev.filter((l) => l.id !== level.id));
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 p-2 hover:bg-white/10 rounded transition-colors"
+                    >
                       <Trash2 className="w-4 h-4 text-[#EF4444]/60" />
                     </button>
                   </div>
@@ -350,10 +365,37 @@ export default function GamificationManagement() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <button className="p-1 hover:bg-white/10 rounded transition-colors">
+                          <button
+                            onClick={() => {
+                              setEditingReward(reward);
+                              setRewardFormData({
+                                title: reward.title,
+                                description: reward.description,
+                                partner: reward.partner,
+                                discount: reward.discount,
+                                minLevel: reward.minLevel,
+                                isActive: reward.isActive,
+                                expiresAt: reward.expiresAt || '',
+                              });
+                              setShowRewardModal(true);
+                            }}
+                            className="p-1 hover:bg-white/10 rounded transition-colors"
+                          >
                             <Edit2 className="w-4 h-4 text-white/60" />
                           </button>
-                          <button className="p-1 hover:bg-white/10 rounded transition-colors">
+                          <button
+                            onClick={async () => {
+                              if (!confirm('Are you sure you want to delete this reward?')) return;
+                              try {
+                                const res = await fetch(`/api/admin/gamification/rewards/${reward.id}`, { method: 'DELETE' });
+                                if (!res.ok) throw new Error('Failed to delete');
+                                setRewards((prev) => prev.filter((r) => r.id !== reward.id));
+                              } catch (err) {
+                                console.error(err);
+                              }
+                            }}
+                            className="p-1 hover:bg-white/10 rounded transition-colors"
+                          >
                             <Trash2 className="w-4 h-4 text-[#EF4444]/60" />
                           </button>
                         </div>
@@ -414,6 +456,7 @@ export default function GamificationManagement() {
         onClose={() => {
           setShowLevelModal(false);
           setEditingLevel(null);
+          setFormError(null);
         }}
         title={editingLevel ? 'Edit Level' : 'Add Membership Level'}
         size="md"
@@ -423,18 +466,68 @@ export default function GamificationManagement() {
               onClick={() => {
                 setShowLevelModal(false);
                 setEditingLevel(null);
+                setFormError(null);
               }}
-              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors"
+              disabled={formLoading}
+              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
-              {editingLevel ? 'Update' : 'Create'} Level
+            <button
+              onClick={async () => {
+                if (!levelFormData.name.trim()) {
+                  setFormError('Level name is required');
+                  return;
+                }
+
+                setFormError(null);
+                setFormLoading(true);
+
+                try {
+                  const url = editingLevel ? `/api/admin/gamification/levels/${editingLevel.id}` : '/api/admin/gamification/levels';
+                  const method = editingLevel ? 'PATCH' : 'POST';
+
+                  const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(levelFormData),
+                  });
+
+                  if (!res.ok) throw new Error('Failed to save level');
+
+                  const result = await res.json();
+
+                  if (editingLevel) {
+                    setLevels((prev) =>
+                      prev.map((l) => (l.id === editingLevel.id ? result.data : l))
+                    );
+                  } else {
+                    setLevels((prev) => [...prev, result.data]);
+                  }
+
+                  setShowLevelModal(false);
+                  setEditingLevel(null);
+                } catch (err) {
+                  setFormError((err as Error).message);
+                } finally {
+                  setFormLoading(false);
+                }
+              }}
+              disabled={formLoading}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors disabled:opacity-50"
+            >
+              {formLoading ? 'Saving...' : editingLevel ? 'Update' : 'Create'} Level
             </button>
           </>
         }
       >
         <div className="space-y-4">
+          {formError && (
+            <div className="flex items-center gap-3 p-3 bg-[#EF4444]/10 border border-[#EF4444]/20 rounded-lg">
+              <AlertCircle className="w-4 h-4 text-[#EF4444]" />
+              <span className="text-sm text-white">{formError}</span>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-white mb-2">Level Name</label>
             <input
@@ -476,6 +569,7 @@ export default function GamificationManagement() {
         onClose={() => {
           setShowRewardModal(false);
           setEditingReward(null);
+          setFormError(null);
         }}
         title={editingReward ? 'Edit Reward' : 'Add New Reward'}
         size="md"
@@ -485,18 +579,69 @@ export default function GamificationManagement() {
               onClick={() => {
                 setShowRewardModal(false);
                 setEditingReward(null);
+                setFormError(null);
               }}
-              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors"
+              disabled={formLoading}
+              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
-              {editingReward ? 'Update' : 'Create'} Reward
+            <button
+              onClick={async () => {
+                if (!rewardFormData.title.trim()) {
+                  setFormError('Reward title is required');
+                  return;
+                }
+
+                setFormError(null);
+                setFormLoading(true);
+
+                try {
+                  const url = editingReward ? `/api/admin/gamification/rewards/${editingReward.id}` : '/api/admin/gamification/rewards';
+                  const method = editingReward ? 'PATCH' : 'POST';
+
+                  const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rewardFormData),
+                  });
+
+                  if (!res.ok) throw new Error('Failed to save reward');
+
+                  const result = await res.json();
+
+                  if (editingReward) {
+                    setRewards((prev) =>
+                      prev.map((r) => (r.id === editingReward.id ? result.data : r))
+                    );
+                  } else {
+                    setRewards((prev) => [...prev, result.data]);
+                  }
+
+                  setShowRewardModal(false);
+                  setEditingReward(null);
+                } catch (err) {
+                  setFormError((err as Error).message);
+                } finally {
+                  setFormLoading(false);
+                }
+              }}
+              disabled={formLoading}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors disabled:opacity-50"
+            >
+              {formLoading ? 'Saving...' : editingReward ? 'Update' : 'Create'} Reward
             </button>
           </>
         }
       >
         <div className="space-y-4">
+          {formError && (
+            <div className="flex items-center gap-3 p-3 bg-[#EF4444]/10 border border-[#EF4444]/20 rounded-lg">
+              <AlertCircle className="w-4 h-4 text-[#EF4444]" />
+              <span className="text-sm text-white">{formError}</span>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-white mb-2">Reward Title</label>
             <input

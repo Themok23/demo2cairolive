@@ -28,7 +28,7 @@ interface Item {
   categoryId?: number;
   governorate?: string;
   area?: string;
-  avgRating: number;
+  avgRating: string | number;
   totalReviews: number;
   isVerified: boolean;
   isFeatured: boolean;
@@ -69,6 +69,17 @@ export default function ItemsManagement() {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [itemFormData, setItemFormData] = useState({
+    name: '',
+    categoryId: '',
+    description: '',
+    governorate: '',
+    isActive: false,
+    isVerified: false,
+    isFeatured: false,
+  });
+  const [itemFormError, setItemFormError] = useState<string | null>(null);
+  const [itemFormLoading, setItemFormLoading] = useState(false);
 
   const itemsPerPage = 10;
 
@@ -85,7 +96,7 @@ export default function ItemsManagement() {
         const itemsData = await itemsRes.json();
         const categoriesData = await categoriesRes.json();
 
-        setItems(itemsData.data || []);
+        setItems(itemsData.data?.items || []);
         setCategories(categoriesData.data || []);
       } catch (err) {
         setError((err as Error).message);
@@ -110,7 +121,7 @@ export default function ItemsManagement() {
       }
       if (ratingFilter) {
         const minRating = parseFloat(ratingFilter);
-        if (item.avgRating < minRating) return false;
+        if (parseFloat(String(item.avgRating)) < minRating) return false;
       }
       if (selectedStatus === 'active' && !item.isActive) return false;
       if (selectedStatus === 'inactive' && item.isActive) return false;
@@ -132,8 +143,8 @@ export default function ItemsManagement() {
           bVal = b.name;
           break;
         case 'rating':
-          aVal = a.avgRating;
-          bVal = b.avgRating;
+          aVal = parseFloat(String(a.avgRating)) || 0;
+          bVal = parseFloat(String(b.avgRating)) || 0;
           break;
         case 'reviews':
           aVal = a.totalReviews;
@@ -192,6 +203,125 @@ export default function ItemsManagement() {
     setSelectedItems(checked ? paginatedItems.map((item) => item.id) : []);
   };
 
+  const handleOpenItemModal = (item?: Item) => {
+    if (item) {
+      setEditingItem(item);
+      setItemFormData({
+        name: item.name,
+        categoryId: item.categoryId?.toString() || '',
+        description: item.description || '',
+        governorate: item.governorate || '',
+        isActive: item.isActive,
+        isVerified: item.isVerified,
+        isFeatured: item.isFeatured,
+      });
+    } else {
+      setEditingItem(null);
+      setItemFormData({
+        name: '',
+        categoryId: '',
+        description: '',
+        governorate: '',
+        isActive: false,
+        isVerified: false,
+        isFeatured: false,
+      });
+    }
+    setItemFormError(null);
+    setShowAddModal(true);
+  };
+
+  const handleSaveItem = async () => {
+    if (!itemFormData.name.trim()) {
+      setItemFormError('Item name is required');
+      return;
+    }
+
+    setItemFormError(null);
+    setItemFormLoading(true);
+
+    try {
+      const url = editingItem ? `/api/admin/items/${editingItem.id}` : '/api/admin/items';
+      const method = editingItem ? 'PATCH' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...itemFormData,
+          categoryId: itemFormData.categoryId ? parseInt(itemFormData.categoryId) : undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to save item');
+      }
+
+      const result = await res.json();
+
+      if (editingItem) {
+        setItems((prev) =>
+          prev.map((item) => (item.id === editingItem.id ? result.data : item))
+        );
+      } else {
+        setItems((prev) => [...prev, result.data]);
+      }
+
+      setShowAddModal(false);
+      setEditingItem(null);
+    } catch (err) {
+      setItemFormError((err as Error).message);
+    } finally {
+      setItemFormLoading(false);
+    }
+  };
+
+  const handleBulkAction = async (action: 'activate' | 'feature' | 'delete') => {
+    if (selectedItems.length === 0) return;
+
+    setItemFormLoading(true);
+    try {
+      const promises = selectedItems.map((itemId) => {
+        const url = `/api/admin/items/${itemId}`;
+        let body = {};
+
+        if (action === 'activate') {
+          body = { isActive: true };
+        } else if (action === 'feature') {
+          body = { isFeatured: true };
+        }
+
+        if (action === 'delete') {
+          return fetch(url, { method: 'DELETE' });
+        } else {
+          return fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+        }
+      });
+
+      await Promise.all(promises);
+
+      if (action === 'delete') {
+        setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
+      } else {
+        // Refetch items after bulk action
+        const res = await fetch('/api/admin/items');
+        const data = await res.json();
+        setItems(data.data?.items || []);
+      }
+
+      setSelectedItems([]);
+    } catch (err) {
+      console.error('Bulk action failed:', err);
+    } finally {
+      setItemFormLoading(false);
+    }
+  };
+
   const governorates = Array.from(
     new Set(items.filter((item) => item.governorate).map((item) => item.governorate))
   ).sort();
@@ -201,7 +331,7 @@ export default function ItemsManagement() {
     active: items.filter((i) => i.isActive).length,
     featured: items.filter((i) => i.isFeatured).length,
     verified: items.filter((i) => i.isVerified).length,
-    avgRating: items.length > 0 ? (items.reduce((sum, i) => sum + i.avgRating, 0) / items.length).toFixed(2) : '0.00',
+    avgRating: items.length > 0 ? (items.reduce((sum, i) => sum + parseFloat(String(i.avgRating)), 0) / items.length).toFixed(2) : '0.00',
   };
 
   if (loading) {
@@ -226,10 +356,7 @@ export default function ItemsManagement() {
           <p className="text-white/60 mt-2">Manage all items in the platform</p>
         </div>
         <button
-          onClick={() => {
-            setEditingItem(null);
-            setShowAddModal(true);
-          }}
+          onClick={() => handleOpenItemModal()}
           className="flex items-center gap-2 bg-[#E8572A] text-white px-4 py-2 rounded-lg hover:bg-[#E8572A]/90 transition-colors"
         >
           <Plus className="w-5 h-5" />
@@ -349,13 +476,25 @@ export default function ItemsManagement() {
               {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
             </span>
             <div className="flex items-center gap-2">
-              <button className="px-3 py-1 bg-[#4CAF88] text-white rounded hover:bg-[#4CAF88]/90 text-sm transition-colors">
+              <button
+                onClick={() => handleBulkAction('activate')}
+                disabled={itemFormLoading}
+                className="px-3 py-1 bg-[#4CAF88] text-white rounded hover:bg-[#4CAF88]/90 text-sm transition-colors disabled:opacity-50"
+              >
                 Activate
               </button>
-              <button className="px-3 py-1 bg-[#F5C542] text-white rounded hover:bg-[#F5C542]/90 text-sm transition-colors">
+              <button
+                onClick={() => handleBulkAction('feature')}
+                disabled={itemFormLoading}
+                className="px-3 py-1 bg-[#F5C542] text-white rounded hover:bg-[#F5C542]/90 text-sm transition-colors disabled:opacity-50"
+              >
                 Feature
               </button>
-              <button className="px-3 py-1 bg-[#EF4444] text-white rounded hover:bg-[#EF4444]/90 text-sm transition-colors">
+              <button
+                onClick={() => handleBulkAction('delete')}
+                disabled={itemFormLoading}
+                className="px-3 py-1 bg-[#EF4444] text-white rounded hover:bg-[#EF4444]/90 text-sm transition-colors disabled:opacity-50"
+              >
                 Delete
               </button>
             </div>
@@ -446,11 +585,11 @@ export default function ItemsManagement() {
                     {item.imageUrl ? (
                       <img
                         src={item.imageUrl}
-                        alt={item.name}
+                        alt={`${item.name} thumbnail`}
                         className="w-10 h-10 rounded object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded bg-white/10" />
+                      <div className="w-10 h-10 rounded bg-white/10" aria-label="No image available" />
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -465,7 +604,7 @@ export default function ItemsManagement() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-[#F5C542]" />
-                      <span className="text-sm font-medium text-white">{item.avgRating.toFixed(1)}</span>
+                      <span className="text-sm font-medium text-white">{parseFloat(String(item.avgRating)).toFixed(1)}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -485,19 +624,26 @@ export default function ItemsManagement() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button className="p-1 hover:bg-white/10 rounded transition-colors">
+                      <button
+                        className="p-1 hover:bg-white/10 rounded transition-colors"
+                        aria-label={`View item ${item.name}`}
+                        title="View item"
+                      >
                         <Eye className="w-4 h-4 text-white/60 hover:text-white" />
                       </button>
                       <button
-                        onClick={() => {
-                          setEditingItem(item);
-                          setShowAddModal(true);
-                        }}
+                        onClick={() => handleOpenItemModal(item)}
                         className="p-1 hover:bg-white/10 rounded transition-colors"
+                        aria-label={`Edit item ${item.name}`}
+                        title="Edit item"
                       >
                         <Edit2 className="w-4 h-4 text-white/60 hover:text-white" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded transition-colors">
+                      <button
+                        className="p-1 hover:bg-white/10 rounded transition-colors"
+                        aria-label={`Delete item ${item.name}`}
+                        title="Delete item"
+                      >
                         <Trash2 className="w-4 h-4 text-[#EF4444]/60 hover:text-[#EF4444]" />
                       </button>
                     </div>
@@ -519,6 +665,8 @@ export default function ItemsManagement() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className="p-1 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              aria-label="Previous page"
+              title="Previous page"
             >
               <ChevronLeft className="w-5 h-5 text-white/60" />
             </button>
@@ -529,6 +677,8 @@ export default function ItemsManagement() {
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
               className="p-1 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              aria-label="Next page"
+              title="Next page"
             >
               <ChevronRight className="w-5 h-5 text-white/60" />
             </button>
@@ -542,6 +692,7 @@ export default function ItemsManagement() {
         onClose={() => {
           setShowAddModal(false);
           setEditingItem(null);
+          setItemFormError(null);
         }}
         title={editingItem ? 'Edit Item' : 'Add New Item'}
         size="lg"
@@ -551,23 +702,37 @@ export default function ItemsManagement() {
               onClick={() => {
                 setShowAddModal(false);
                 setEditingItem(null);
+                setItemFormError(null);
               }}
-              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors"
+              disabled={itemFormLoading}
+              className="px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
-              {editingItem ? 'Update Item' : 'Add Item'}
+            <button
+              onClick={handleSaveItem}
+              disabled={itemFormLoading}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors disabled:opacity-50"
+            >
+              {itemFormLoading ? 'Saving...' : editingItem ? 'Update Item' : 'Add Item'}
             </button>
           </>
         }
       >
         <div className="space-y-4">
+          {itemFormError && (
+            <div className="flex items-center gap-3 p-3 bg-[#EF4444]/10 border border-[#EF4444]/20 rounded-lg">
+              <AlertCircle className="w-4 h-4 text-[#EF4444]" />
+              <span className="text-sm text-white">{itemFormError}</span>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-white mb-2">Item Name</label>
             <input
               type="text"
-              defaultValue={editingItem?.name || ''}
+              value={itemFormData.name}
+              onChange={(e) => setItemFormData((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Item name"
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-[#E8572A] transition-colors"
             />
@@ -576,7 +741,8 @@ export default function ItemsManagement() {
           <div>
             <label className="block text-sm font-medium text-white mb-2">Category</label>
             <select
-              defaultValue={editingItem?.categoryId || ''}
+              value={itemFormData.categoryId}
+              onChange={(e) => setItemFormData((prev) => ({ ...prev, categoryId: e.target.value }))}
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8572A] transition-colors"
             >
               <option value="">Select a category</option>
@@ -591,7 +757,8 @@ export default function ItemsManagement() {
           <div>
             <label className="block text-sm font-medium text-white mb-2">Description</label>
             <textarea
-              defaultValue={editingItem?.description || ''}
+              value={itemFormData.description}
+              onChange={(e) => setItemFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Item description"
               rows={4}
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-[#E8572A] transition-colors resize-none"
@@ -602,7 +769,8 @@ export default function ItemsManagement() {
             <label className="block text-sm font-medium text-white mb-2">Governorate</label>
             <input
               type="text"
-              defaultValue={editingItem?.governorate || ''}
+              value={itemFormData.governorate}
+              onChange={(e) => setItemFormData((prev) => ({ ...prev, governorate: e.target.value }))}
               placeholder="Governorate"
               className="w-full bg-[#13132B] border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-[#E8572A] transition-colors"
             />
@@ -613,7 +781,8 @@ export default function ItemsManagement() {
               <label className="flex items-center gap-2 text-sm font-medium text-white cursor-pointer">
                 <input
                   type="checkbox"
-                  defaultChecked={editingItem?.isActive}
+                  checked={itemFormData.isActive}
+                  onChange={(e) => setItemFormData((prev) => ({ ...prev, isActive: e.target.checked }))}
                   className="w-4 h-4 rounded border-white/20 bg-[#13132B]"
                 />
                 Active
@@ -623,7 +792,8 @@ export default function ItemsManagement() {
               <label className="flex items-center gap-2 text-sm font-medium text-white cursor-pointer">
                 <input
                   type="checkbox"
-                  defaultChecked={editingItem?.isVerified}
+                  checked={itemFormData.isVerified}
+                  onChange={(e) => setItemFormData((prev) => ({ ...prev, isVerified: e.target.checked }))}
                   className="w-4 h-4 rounded border-white/20 bg-[#13132B]"
                 />
                 Verified
@@ -633,7 +803,8 @@ export default function ItemsManagement() {
               <label className="flex items-center gap-2 text-sm font-medium text-white cursor-pointer">
                 <input
                   type="checkbox"
-                  defaultChecked={editingItem?.isFeatured}
+                  checked={itemFormData.isFeatured}
+                  onChange={(e) => setItemFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))}
                   className="w-4 h-4 rounded border-white/20 bg-[#13132B]"
                 />
                 Featured

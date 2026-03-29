@@ -12,12 +12,14 @@ import {
 export async function GET(request: NextRequest) {
   try {
     const itemId = request.nextUrl.searchParams.get('itemId');
-    if (!itemId) return error('itemId is required');
+    if (!itemId) return error('itemId is required', 400);
     const useCase = new GetReviewsByItem(getReviewRepository(), getUserRepository());
     const reviews = await useCase.execute(Number(itemId));
     return success(reviews);
   } catch (err) {
-    return error((err as Error).message, 500);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[GET /api/reviews] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }
 
@@ -33,9 +35,9 @@ export async function POST(request: NextRequest) {
     const review = await useCase.execute(body, Number((session.user as any).id));
     return success(review, 201);
   } catch (err) {
-    return error(
-      (err as Error).message,
-      err instanceof Error && err.message.includes('Authentication') ? 401 : 400
-    );
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[POST /api/reviews] Error:', errorMsg, err);
+    const statusCode = err instanceof Error && err.message.includes('Authentication') ? 401 : 500;
+    return error('Internal server error', statusCode);
   }
 }

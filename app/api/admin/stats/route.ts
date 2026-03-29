@@ -16,6 +16,7 @@ import {
   and,
   gte,
   lte,
+  inArray,
 } from 'drizzle-orm';
 
 export async function GET() {
@@ -184,33 +185,25 @@ export async function GET() {
       totalReviews: item.totalReviews ?? 0,
     }));
 
-    // Get recent activity
+    // Get recent activity with JOINs to avoid N+1 queries
     const recentActivityData = await db
       .select({
-        id: reviews.id,
         type: sql<string>`'review'`,
-        itemId: reviews.itemId,
-        userId: reviews.userId,
+        itemName: items.name,
+        userName: users.name,
         createdAt: reviews.createdAt,
       })
       .from(reviews)
+      .innerJoin(items, eq(reviews.itemId, items.id))
+      .innerJoin(users, eq(reviews.userId, users.id))
       .orderBy(desc(reviews.createdAt))
       .limit(20);
 
-    const recentActivity = await Promise.all(
-      recentActivityData.map(async (activity: any) => {
-        const [itemData, userData] = await Promise.all([
-          db.select({ name: items.name }).from(items).where(eq(items.id, activity.itemId)).limit(1),
-          db.select({ name: users.name }).from(users).where(eq(users.id, activity.userId)).limit(1),
-        ]);
-
-        return {
-          type: 'review',
-          description: `${userData[0]?.name || 'Unknown'} reviewed ${itemData[0]?.name || 'Unknown'}`,
-          timestamp: activity.createdAt,
-        };
-      })
-    );
+    const recentActivity = recentActivityData.map((activity: any) => ({
+      type: 'review',
+      description: `${activity.userName || 'Unknown'} reviewed ${activity.itemName || 'Unknown'}`,
+      timestamp: activity.createdAt,
+    }));
 
     return success({
       overview: {
@@ -230,6 +223,8 @@ export async function GET() {
       recentActivity,
     });
   } catch (err) {
-    return error((err as Error).message, 403);
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[GET /api/admin/stats] Error:', errorMsg, err);
+    return error('Internal server error', 500);
   }
 }

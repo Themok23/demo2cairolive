@@ -2,13 +2,13 @@
 
 import { useRef, useEffect, ReactNode } from 'react';
 
-interface FadeUpProps {
+interface SectionRevealProps {
   children: ReactNode;
-  delay?: number;
   className?: string;
+  delay?: number;
 }
 
-export default function FadeUp({ children, delay = 0, className }: FadeUpProps) {
+export default function SectionReveal({ children, className, delay = 0 }: SectionRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function FadeUp({ children, delay = 0, className }: FadeUpProps) 
     if (!el) return;
 
     if (delay > 0) {
-      el.style.transitionDelay = `${delay * 1000}ms`;
+      el.style.transitionDelay = `${delay}ms`;
     }
 
     const observer = new IntersectionObserver(
@@ -26,7 +26,7 @@ export default function FadeUp({ children, delay = 0, className }: FadeUpProps) 
           observer.unobserve(el);
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
 
     observer.observe(el);
@@ -35,7 +35,10 @@ export default function FadeUp({ children, delay = 0, className }: FadeUpProps) 
   }, [delay]);
 
   return (
-    <div ref={ref} className={`fade-up ${className || ''}`}>
+    <div
+      ref={ref}
+      className={`section-reveal ${className || ''}`}
+    >
       {children}
     </div>
   );

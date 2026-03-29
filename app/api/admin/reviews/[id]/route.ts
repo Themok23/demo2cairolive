@@ -70,6 +70,14 @@ export async function PATCH(
 
     const body = await request.json();
 
+    // Validate status if provided
+    if ('status' in body) {
+      const validStatuses = ['pending', 'approved', 'rejected'];
+      if (!validStatuses.includes(body.status)) {
+        return error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
+      }
+    }
+
     // Check if review exists
     const existingReview = await db
       .select()
@@ -83,7 +91,7 @@ export async function PATCH(
 
     const updateData: Record<string, any> = { updatedAt: new Date() };
 
-    if ('status' in body && ['pending', 'approved', 'rejected'].includes(body.status)) {
+    if ('status' in body) {
       updateData.status = body.status;
     }
 

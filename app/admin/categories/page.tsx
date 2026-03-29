@@ -22,7 +22,7 @@ interface Category {
   color?: string;
   description?: string;
   itemCount: number;
-  avgRating?: number;
+  avgRating?: string | number;
 }
 
 export default function CategoriesManagement() {
@@ -43,10 +43,10 @@ export default function CategoriesManagement() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/categories');
+        const res = await fetch('/api/admin/categories');
         if (!res.ok) throw new Error('Failed to fetch categories');
         const data = await res.json();
-        setCategories(data.data || []);
+        setCategories(data.data?.categories || []);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -209,7 +209,7 @@ export default function CategoriesManagement() {
                     <p className="text-xs text-white/60 mb-1">Avg Rating</p>
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-[#F5C542]" />
-                      <p className="text-lg font-bold text-white">{category.avgRating.toFixed(1)}</p>
+                      <p className="text-lg font-bold text-white">{parseFloat(String(category.avgRating)).toFixed(1)}</p>
                     </div>
                   </div>
                 )}
@@ -227,6 +227,7 @@ export default function CategoriesManagement() {
                   disabled={index === 0}
                   className="p-2 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-1"
                   title="Move up"
+                  aria-label={`Move category ${category.name} up`}
                 >
                   <ArrowUp className="w-4 h-4 text-white/60 mx-auto" />
                 </button>
@@ -235,6 +236,7 @@ export default function CategoriesManagement() {
                   disabled={index === categories.length - 1}
                   className="p-2 hover:bg-white/10 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-1"
                   title="Move down"
+                  aria-label={`Move category ${category.name} down`}
                 >
                   <ArrowDown className="w-4 h-4 text-white/60 mx-auto" />
                 </button>
@@ -242,6 +244,7 @@ export default function CategoriesManagement() {
                   onClick={() => handleOpenEditModal(category)}
                   className="p-2 hover:bg-white/10 rounded transition-colors flex-1"
                   title="Edit"
+                  aria-label={`Edit category ${category.name}`}
                 >
                   <Edit2 className="w-4 h-4 text-white/60 hover:text-white mx-auto" />
                 </button>
@@ -249,6 +252,7 @@ export default function CategoriesManagement() {
                   onClick={() => handleDeleteCategory(category.id)}
                   className="p-2 hover:bg-white/10 rounded transition-colors flex-1"
                   title="Delete"
+                  aria-label={`Delete category ${category.name}`}
                 >
                   <Trash2 className="w-4 h-4 text-[#EF4444]/60 hover:text-[#EF4444] mx-auto" />
                 </button>
@@ -278,7 +282,44 @@ export default function CategoriesManagement() {
             >
               Cancel
             </button>
-            <button className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors">
+            <button
+              onClick={async () => {
+                if (!formData.name.trim()) {
+                  alert('Category name is required');
+                  return;
+                }
+
+                const url = editingCategory ? `/api/admin/categories/${editingCategory.id}` : '/api/admin/categories';
+                const method = editingCategory ? 'PATCH' : 'POST';
+
+                try {
+                  const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                  });
+
+                  if (!res.ok) throw new Error('Failed to save category');
+
+                  const result = await res.json();
+
+                  if (editingCategory) {
+                    setCategories((prev) =>
+                      prev.map((c) => (c.id === editingCategory.id ? result.data : c))
+                    );
+                  } else {
+                    setCategories((prev) => [...prev, result.data]);
+                  }
+
+                  setShowAddModal(false);
+                  setEditingCategory(null);
+                } catch (err) {
+                  console.error(err);
+                  alert('Failed to save category');
+                }
+              }}
+              className="px-4 py-2 bg-[#E8572A] text-white rounded-lg hover:bg-[#E8572A]/90 transition-colors"
+            >
               {editingCategory ? 'Update' : 'Create'} Category
             </button>
           </>
