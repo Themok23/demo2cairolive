@@ -98,7 +98,7 @@ export default function RewardsPage() {
       <section
         className="relative overflow-hidden py-20 sm:py-32 md:py-40"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1556740712-a01 bf67340d5?w=1500&h=600&fit=crop)',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1556740758-90de940b2946?w=1500&h=600&fit=crop)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',

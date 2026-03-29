@@ -5,45 +5,37 @@ import { useRef, useEffect, ReactNode } from 'react';
 interface FadeUpProps {
   children: ReactNode;
   delay?: number;
-  duration?: number;
   className?: string;
 }
 
-export default function FadeUp({ children, delay = 0, duration = 0.8, className }: FadeUpProps) {
+export default function FadeUp({ children, delay = 0, className }: FadeUpProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const loadGsap = async () => {
-      const gsap = (await import('gsap')).default;
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-      gsap.registerPlugin(ScrollTrigger);
+    if (delay > 0) {
+      el.style.transitionDelay = `${delay * 1000}ms`;
+    }
 
-      gsap.fromTo(
-        el,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration,
-          delay,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-          },
-        },
-      );
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('revealed');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+    );
 
-    loadGsap();
-  }, [delay, duration]);
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [delay]);
 
   return (
-    <div ref={ref} className={className} style={{ opacity: 0 }}>
+    <div ref={ref} className={`fade-up ${className || ''}`}>
       {children}
     </div>
   );

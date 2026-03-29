@@ -164,32 +164,64 @@ export default async function HomePage() {
       </section>
 
       {/* Category Grid */}
-      <section className="relative py-16 sm:py-24 bg-background">
-        <FloatingElements variant="light" />
+      <section className="relative py-16 sm:py-24 bg-secondary overflow-hidden">
+        <FloatingElements variant="dark" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionReveal>
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-secondary mb-3 tracking-tight">Browse Categories</h2>
-              <p className="text-text-muted max-w-2xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">Browse Categories</h2>
+              <p className="text-white/70 max-w-2xl mx-auto text-lg font-body">
                 Explore curated collections across all of Egypt
               </p>
             </div>
           </SectionReveal>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {allCategories.map((cat: any, i: number) => (
-              <FadeUp key={cat.slug} delay={i * 0.05}>
-                <Link
-                  href={`/explore/${cat.slug}`}
-                  className="group flex flex-col items-center gap-3 rounded-2xl bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-2 hover:shadow-card-hover"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                    <CategoryIcon name={cat.icon ?? 'MapPin'} size={28} />
-                  </div>
-                  <span className="text-sm font-semibold text-center text-secondary leading-tight">{cat.name}</span>
-                  <span className="text-xs text-text-muted">{cat.itemCount ?? 0} items</span>
-                </Link>
-              </FadeUp>
-            ))}
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 auto-rows-max">
+            {allCategories.map((cat: any, i: number) => {
+              // Create asymmetric layout: first 2 categories span 2 rows, others normal
+              const isLarge = i < 2;
+              const rowSpan = isLarge ? 'sm:row-span-2' : '';
+              const colSpan = isLarge ? 'lg:col-span-2' : '';
+
+              return (
+                <FadeUp key={cat.slug} delay={i * 0.08}>
+                  <Link
+                    href={`/explore/${cat.slug}`}
+                    className={`group relative flex flex-col items-center justify-center gap-4 rounded-2xl bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm p-6 sm:p-8 shadow-lg transition-all duration-500 overflow-hidden h-full min-h-[140px] sm:min-h-[160px] ${rowSpan} ${colSpan} hover:shadow-2xl hover:-translate-y-1 active:scale-95`}
+                  >
+                    {/* Animated background gradient on hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 via-transparent to-accent-gold/5" />
+
+                    {/* Glow effect on hover */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-accent-gold to-primary rounded-2xl opacity-0 group-hover:opacity-20 blur transition-all duration-500 -z-10" />
+
+                    {/* Icon container with animation */}
+                    <div className="relative flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary transition-all duration-500 group-hover:from-primary group-hover:to-primary/90 group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/40">
+                      <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 animate-pulse duration-2000" />
+                      <CategoryIcon name={cat.icon ?? 'MapPin'} size={isLarge ? 36 : 28} />
+                    </div>
+
+                    {/* Text content */}
+                    <div className="relative flex flex-col items-center gap-1.5 flex-1 justify-center">
+                      <span className="text-sm sm:text-base font-bold text-center text-secondary leading-snug font-body transition-colors duration-300 group-hover:text-primary line-clamp-2">
+                        {cat.name}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-secondary/60 font-medium transition-colors duration-300 group-hover:text-primary/70">
+                        <span className="flex h-1.5 w-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
+                        {cat.itemCount ?? 0} items
+                      </span>
+                    </div>
+
+                    {/* Hover arrow indicator */}
+                    <div className="absolute right-4 top-4 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </div>
+                  </Link>
+                </FadeUp>
+              );
+            })}
           </div>
         </div>
       </section>
