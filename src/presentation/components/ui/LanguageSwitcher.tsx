@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { ChevronDown } from 'lucide-react';
 
 type Language = {
@@ -17,36 +16,37 @@ const languages: Language[] = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ];
 
+function getLocaleFromPath(pathname: string): string {
+  if (pathname.startsWith('/ar')) return 'ar';
+  if (pathname.startsWith('/fr')) return 'fr';
+  return 'en';
+}
+
 export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const locale = getLocaleFromPath(pathname);
   const currentLanguage = languages.find((lang) => lang.code === locale);
 
   const handleLanguageChange = (newLocale: string) => {
     setIsOpen(false);
-
-    if (newLocale === locale) {
-      return;
-    }
+    if (newLocale === locale) return;
 
     startTransition(() => {
-      // Remove locale prefix from pathname
-      let newPathname = pathname;
-      if (pathname.startsWith(`/${locale}`)) {
-        newPathname = pathname.slice(locale.length + 1);
+      // Strip existing locale prefix if present
+      let basePath = pathname;
+      if (pathname.startsWith('/ar') || pathname.startsWith('/fr')) {
+        basePath = pathname.slice(3) || '/';
       }
 
-      // If pathname is just "/" or empty, keep it as "/"
-      if (!newPathname || newPathname === '') {
-        newPathname = '/';
+      if (newLocale === 'en') {
+        router.replace(basePath || '/');
+      } else {
+        router.replace(`/${newLocale}${basePath === '/' ? '' : basePath}`);
       }
-
-      // Navigate to the new locale (next-intl middleware will handle adding locale prefix)
-      router.replace(`/${newLocale}${newPathname}`);
     });
   };
 
@@ -58,9 +58,9 @@ export default function LanguageSwitcher() {
         aria-label="Switch language"
         disabled={isPending}
       >
-        <span className="text-lg">{currentLanguage?.flag}</span>
+        <span className="text-lg">{currentLanguage?.flag ?? '🇺🇸'}</span>
         <span className="hidden sm:inline text-sm font-medium text-text-primary">
-          {currentLanguage?.code.toUpperCase()}
+          {currentLanguage?.code.toUpperCase() ?? 'EN'}
         </span>
         <ChevronDown
           size={16}
