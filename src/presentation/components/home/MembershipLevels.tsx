@@ -70,7 +70,7 @@ export default function MembershipLevels() {
         <FadeUp>
           <div className="text-center mb-16">
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3 tracking-tight">
-              Membership Journey
+              Level Up
             </h2>
             <p className="text-white/80 max-w-2xl mx-auto">
               Build your reputation by contributing reviews and unlock exclusive discounts at each level

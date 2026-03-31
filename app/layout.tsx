@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'demo2cairolive - Rate anything in Egypt',
-  description: 'A community-driven rating and review platform focused entirely on Egypt. Discover, add, and rate restaurants, cosmetics, cafes, gyms, beaches, and more.',
+  title: 'demo2cairolive - Make or break reviews',
+  description: 'Real opinions on restaurants, cafes, gyms, beaches, and more across Egypt. No sugarcoating.',
 };
 
 export default function RootLayout({

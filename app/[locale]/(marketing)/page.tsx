@@ -88,33 +88,33 @@ export default async function HomePage() {
   const categorySlugs = ['restaurants-food', 'cafes-coffee', 'skincare-cosmetics', 'beaches-resorts', 'gyms-fitness', 'street-food'];
   const categoryTitles: Record<string, { title: string; description: string; variant: 'featured' | 'masonry' | 'magazine' | 'banner' | 'bold-grid' | 'filmstrip' }> = {
     'restaurants-food': {
-      title: 'Taste of Egypt',
-      description: 'Discover the finest restaurants serving authentic and modern cuisine',
+      title: 'The Real Taste Test',
+      description: 'We settle the debate on who actually serves the best in Egypt',
       variant: 'featured',
     },
     'cafes-coffee': {
-      title: 'Coffee & Vibes',
-      description: 'Explore cozy cafes perfect for work, meetings, or relaxation',
+      title: 'Where You Actually Want to Work',
+      description: 'Overrated or underrated? The community decides which cafes are worth your time',
       variant: 'masonry',
     },
     'skincare-cosmetics': {
-      title: 'Beauty & Skincare',
-      description: 'Top rated skincare and cosmetics brands in Egypt',
+      title: 'No Filter Needed',
+      description: 'Honest reviews on the skincare and cosmetics brands that actually deliver',
       variant: 'magazine',
     },
     'beaches-resorts': {
-      title: 'Sun & Sea',
-      description: "Relax at Egypt's most beautiful coastal destinations",
+      title: 'Worth the Drive?',
+      description: 'Find out which beaches and resorts live up to the hype',
       variant: 'banner',
     },
     'gyms-fitness': {
-      title: 'Fitness & Wellness',
-      description: 'Stay active with the best gyms and fitness centers across Egypt',
+      title: 'No Pain, All Gains',
+      description: 'The gyms and fitness spots that actually get results, rated by real people',
       variant: 'bold-grid',
     },
     'street-food': {
-      title: 'Street Food Gems',
-      description: "The authentic street food that makes Egypt's food culture legendary",
+      title: 'Street Cred',
+      description: 'The street food spots locals swear by, now rated and ranked',
       variant: 'filmstrip',
     },
   };
@@ -138,24 +138,24 @@ export default async function HomePage() {
         <FloatingElements variant="dark" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <StaggerText
-            text="Rate anything in Egypt."
+            text="Make or break reviews."
             className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight drop-shadow-lg"
           />
           <FadeUp delay={0.5}>
             <p className="mt-6 text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-body leading-relaxed drop-shadow-md">
-              Discover, review, and rate the best restaurants, cafes, beaches, fitness, skincare, street food, and more across Egypt.
+              Real opinions. No sugarcoating. Rate restaurants, cafes, gyms, beaches, and everything in between across Egypt.
             </p>
           </FadeUp>
           <FadeUp delay={0.7}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/explore">
                 <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-primary/25">
-                  Explore Now
+                  Start Rating
                 </button>
               </Link>
               <Link href="/submit">
                 <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg border-2 border-white/80 text-white hover:bg-white/15 transition-all duration-200 backdrop-blur-sm">
-                  Add Something
+                  Drop a Review
                 </button>
               </Link>
             </div>
@@ -169,9 +169,9 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionReveal>
             <div className="text-center mb-16">
-              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">Browse Categories</h2>
+              <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">Pick Your Arena</h2>
               <p className="text-white/70 max-w-2xl mx-auto text-lg font-body">
-                Explore curated collections across all of Egypt
+                What are you here to rate?
               </p>
             </div>
           </SectionReveal>
@@ -267,7 +267,7 @@ export default async function HomePage() {
                   end={stats.items}
                   className="block font-display text-5xl sm:text-6xl font-bold text-primary drop-shadow-lg"
                 />
-                <span className="mt-3 block text-white/80 font-body text-lg">Items Rated</span>
+                <span className="mt-3 block text-white/80 font-body text-lg">Places Judged</span>
               </div>
             </FadeUp>
             <FadeUp delay={0.15}>
@@ -276,7 +276,7 @@ export default async function HomePage() {
                   end={stats.reviews}
                   className="block font-display text-5xl sm:text-6xl font-bold text-accent-gold drop-shadow-lg"
                 />
-                <span className="mt-3 block text-white/80 font-body text-lg">Reviews</span>
+                <span className="mt-3 block text-white/80 font-body text-lg">Honest Reviews</span>
               </div>
             </FadeUp>
             <FadeUp delay={0.3}>
@@ -285,7 +285,7 @@ export default async function HomePage() {
                   end={stats.categories}
                   className="block font-display text-5xl sm:text-6xl font-bold text-accent-green drop-shadow-lg"
                 />
-                <span className="mt-3 block text-white/80 font-body text-lg">Categories</span>
+                <span className="mt-3 block text-white/80 font-body text-lg">Arenas</span>
               </div>
             </FadeUp>
           </div>
@@ -298,14 +298,14 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <FadeUp>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
-              Found something worth rating?
+              Got something to say?
             </h2>
             <p className="text-white/90 font-body text-lg max-w-2xl mx-auto mb-8">
-              Help the community discover the best of Egypt by adding and reviewing your favorite places.
+              Good or terrible, the community needs to hear it. Your review could be the one that tips the scale.
             </p>
             <Link href="/submit">
               <button className="inline-flex items-center justify-center font-body font-semibold rounded-xl px-8 py-4 text-lg border-2 border-white text-white hover:bg-white/15 transition-all duration-200 backdrop-blur-sm">
-                Add It Now
+                Drop Your Review
               </button>
             </Link>
           </FadeUp>

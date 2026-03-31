@@ -30,7 +30,7 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" />
             </Link>
             <Link href="/submit" className="relative text-sm font-semibold text-text-primary hover:text-primary transition-colors group">
-              Add Item
+              Submit
               <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full" />
             </Link>
           </div>
@@ -44,7 +44,7 @@ export default function Navbar() {
             <Link href="/submit">
               <Button variant="primary" size="sm">
                 <Plus size={16} className="mr-1" />
-                Add Something
+                Rate Something
               </Button>
             </Link>
             <LanguageSwitcher />
@@ -71,7 +71,7 @@ export default function Navbar() {
               Rewards
             </Link>
             <Link href="/submit" className="block py-2 text-sm font-semibold text-text-primary hover:text-primary">
-              Add Item
+              Submit
             </Link>
             <Link href="/auth/signin" className="block py-2 text-sm font-semibold text-text-primary hover:text-primary">
               Sign In

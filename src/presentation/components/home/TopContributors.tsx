@@ -86,7 +86,7 @@ export default function TopContributors() {
         <FadeUp>
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-secondary mb-3 tracking-tight">
-              Top Contributors
+              Hall of Fame
             </h2>
             <p className="text-text-muted max-w-2xl mx-auto">
               Recognize our most active community members

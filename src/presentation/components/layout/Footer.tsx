@@ -16,7 +16,7 @@ export default function Footer() {
               <span className="text-2xl font-display text-white">cairolive</span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
-              Rate anything in Egypt. A community-driven platform to discover, review, and rate the best of Egypt.
+              Make or break reviews. The platform where Egypt rates everything, no filter.
             </p>
           </div>
           <div>
