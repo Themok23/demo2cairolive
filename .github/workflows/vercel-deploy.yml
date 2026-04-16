@@ -1,0 +1,14 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel master deploy
+        if: github.ref == 'refs/heads/master'
+        run: curl -X POST "${{ secrets.VERCEL_MASTER_DEPLOY_HOOK }}" 
